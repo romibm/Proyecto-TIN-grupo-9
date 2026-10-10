@@ -1,0 +1,20 @@
+{
+  "anio": 2025,
+  "mezcla_alimento": {
+    "engorda100": 0.3333333333333333,
+    "engorda200": 0.3333333333333333,
+    "pigmentado": 0.3333333333333333
+  },
+  "precios_faltantes": "promedio_anual_por_tipo_alimento",
+  "fcr_diario_minimo_calidad": 0.1,
+  "fcr_diario_maximo_advertencia": 10.0,
+  "tolerancia_balance_poblacion_peces": 0,
+  "zonas_inferidas_por_centro": {
+    "7": 3
+  },
+  "basal": "por_lote_dias_sin_eventos_sanitarios",
+  "fcr_principal": "alimento_dividido_por_crecimiento_reportado",
+  "fcr_alternativo": "alimento_dividido_por_crecimiento_menos_mortalidad_estimada",
+  "peso_muertos": "peso_promedio_vivos_estimado_por_biomasa_dividida_por_poblacion",
+  "ranking_centro": "costo_alimento_clp_dividido_por_crecimiento_reportado_kg"
+}

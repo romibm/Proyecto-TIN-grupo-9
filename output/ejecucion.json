@@ -1,0 +1,37 @@
+{
+  "api_url": "https://mindicador.cl/api/dolar/2025",
+  "api_modo": "actualizada",
+  "csv_codificacion": "cp1252",
+  "supuesto_crecimiento": "El crecimiento reportado se interpreta como anterior a descontar la biomasa perdida por mortalidad, inferencia no confirmada por el cliente",
+  "supuesto_peso_muertos": "Se estima con el peso promedio de los peces vivos del mismo registro diario",
+  "alcance_costos": "Solo alimento, ranking por costo estimado de alimento por kg de crecimiento reportado",
+  "sha256_fuentes": {
+    "dolar_2025.json": "7726135ad9779fce4319e778b2862f5552c832a1e25edbc0bf0c39b022a1f6c1",
+    "dolar_2025_metadata.json": "32ffb1cc8b4515a2a50afd5488798eef51b55e455e9585fe83cc381365710d00",
+    "origen_acuicultura.sqlite": "6959bd2204e33477199917b1665f2841a52977573b115c6a752ade3b3fa037b3",
+    "origen_costos_alimento.csv": "6335986429a4c8393a71bac628fa08d9a72f5b305a1c09e59fdb395827f1e885",
+    "origen_eventos_sanitarios.json": "cf7dbd7ba6eb01fd739474bc8f4137559e56511d873ab91cecb62311c75c0e3c"
+  },
+  "filas_por_tabla": {
+    "operacion_integrada": 13158,
+    "centros": 7,
+    "zonas": 3,
+    "jaulas": 42,
+    "lotes": 42,
+    "especies": 3,
+    "cosechas": 42,
+    "precios_alimento": 36,
+    "mezcla_mensual": 12,
+    "eventos_sanitarios": 4,
+    "dolar_observado": 248,
+    "puente_eventos_operacion": 390,
+    "basal_por_lote": 42,
+    "resumen_eventos_sanitarios": 4,
+    "resumen_centros": 7,
+    "resumen_centro_mes": 84,
+    "cobertura": 5,
+    "incidencias_calidad": 2349
+  },
+  "verificaciones": "claves únicas; cruces sin multiplicar filas; totales conciliados; cobertura conciliada; costos dentro del rango de mezcla",
+  "duracion_segundos": 2.567
+}
