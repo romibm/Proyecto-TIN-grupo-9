@@ -2,8 +2,8 @@
 
 El trabajo tiene dos scripts que se ejecutan en este orden:
 
-1. `main.py` (persona 1) limpia la base SQLite y genera `output_persona1/datos_sqlite_limpios.sqlite`.
-2. `limpieza_externas.py` (persona 2) limpia el CSV de precios, el JSON de eventos sanitarios y la API del dólar, calcula la cobertura y hace los gráficos. Necesita la base del paso 1 para validar los eventos.
+1. `main.py` (Romina) limpia la base SQLite y genera `output_persona1/datos_sqlite_limpios.sqlite`.
+2. `limpieza_externas.py` (Antonia) limpia el CSV de precios, el JSON de eventos sanitarios y la API del dólar, calcula la cobertura y hace los gráficos. Necesita la base del paso 1 para validar los eventos.
 
 Las fuentes originales se abren en modo de solo lectura y se conservan intactas.
 
@@ -33,9 +33,9 @@ Los archivos originales deben estar en la carpeta `archivos/`:
 | `origen_costos_alimento.csv` | `limpieza_externas.py` |
 | `origen_eventos_sanitarios.json` | `limpieza_externas.py` |
 
-Los criterios y supuestos están en `DECISIONES_SQLITE.md` (persona 1) y `DECISIONES_EXTERNAS.md` (persona 2). Los valores utilizados en `main.py` están al principio del archivo.
+Los criterios y supuestos están en `DECISIONES_SQLITE.md` (Romina) y `DECISIONES_EXTERNAS.md` (Antonia). Los valores utilizados en `main.py` están al principio del archivo.
 
-# Parte 1 — Limpieza de SQLite (persona 1)
+# Parte 1 — Limpieza de SQLite (Romina)
 
 `main.py` lee `origen_acuicultura.sqlite`, aplica las decisiones de limpieza acordadas y guarda una base limpia. El script crea `output_persona1/datos_sqlite_limpios.sqlite`.
 
@@ -72,9 +72,9 @@ Cada ejecución vuelve a generar la base limpia. Se escribe primero una base tem
 
 Se verificó que las filas conservadas coincidan con las decisiones acordadas y que dos ejecuciones produzcan los mismos datos.
 
-# Parte 2 — Precios, eventos sanitarios y dólar (persona 2)
+# Parte 2 — Precios, eventos sanitarios y dólar (Antonia)
 
-`limpieza_externas.py` lee el CSV de precios, el JSON de eventos y la API del dólar. Crea la carpeta `output_persona2/`. Si falta la base de la persona 1, el script se detiene porque necesita validar los eventos contra sus centros, jaulas y operación diaria.
+`limpieza_externas.py` lee el CSV de precios, el JSON de eventos y la API del dólar. Crea la carpeta `output_persona2/`. Si falta la base de la Romina, el script se detiene porque necesita validar los eventos contra sus centros, jaulas y operación diaria.
 
 ## Trabajo realizado
 
@@ -125,7 +125,7 @@ El total está dominado por la fuente más pequeña, los eventos. Debe leerse ju
 
 ## Limitaciones
 
-- La mortalidad observada usa `operacion_limpia`, que ya excluyó filas según los criterios de la persona 1. Puede ser menor que la real, de modo que la diferencia con el JSON podría estar sobreestimada.
+- La mortalidad observada usa `operacion_limpia`, que ya excluyó filas según los criterios de la Romina. Puede ser menor que la real, de modo que la diferencia con el JSON podría estar sobreestimada.
 - En los cuatro eventos válidos la mortalidad declarada en el JSON es mayor que la observada en el centro. En EV-8001 (Skyring) declara 70.399 peces y la operación registra 66.153 en todo el centro y 45.862 en las jaulas afectadas.
 - Los meses sin precio se muestran como huecos y no se estiman.
 
