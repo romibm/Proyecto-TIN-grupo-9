@@ -1,0 +1,5 @@
+﻿evento_id,centro_id,centro,tipo,fecha_inicio,fecha_fin,tratamiento,jaulas_afectadas,mortalidad_declarada_json_n,mortalidad_observada_jaulas_afectadas_n,mortalidad_observada_centro_n,filas_operacion_jaulas_afectadas
+EV-8001,7,Centro Skyring,Caligus,2025-08-01,2025-10-15,Baño antiparasitario,37 38 39 40,70399,45862,66153,287
+EV-8003,5,Centro Cisnes,Caligus,2025-05-07,2025-05-28,Baño antiparasitario,30 25,6487,976,3038,39
+EV-8004,4,Centro Melinka,Branquitis,2025-05-12,2025-05-28,Vacunación,23 22,2112,800,2268,30
+EV-8002,2,Centro Calbuco,SRS,2025-05-10,2025-05-28,Antibiótico,11 9,6394,812,2640,34
