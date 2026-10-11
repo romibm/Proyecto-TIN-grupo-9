@@ -1,0 +1,37 @@
+tipo_alimento;mes;precio_clp_kg;proveedor;moneda;glosa
+engorda100;2025-01;950;BioMar;CLP;ración estándar
+engorda100;2025-02;964;Ewos;CLP;nutrición engorda
+Engorda 100;2025-03;978,00;Ewos;CLP;con pigmentación
+Engorda 100;2025-04;993;Ewos;CLP;con pigmentación
+ENG-100;2025-05;sin dato;BioMar;CLP;alimentación invierno
+Engorda 100;2025-06;1.021,00;Skretting;CLP;con pigmentación
+ENG-100;2025-07;1036;Ewos;CLP;nutrición engorda
+engorda100;2025-08;$1.050;BioMar;CLP;dieta medicada
+ENG-100;2025-09;1064;BioMar;CLP;nutrición engorda
+tipo_alimento;mes;precio_clp_kg;proveedor;moneda;glosa
+Engorda 100;2025-10;$1.078;BioMar;CLP;con pigmentación
+Engorda 100;2025-11;1.092,00;BioMar;CLP;alimentación invierno
+Engorda 100;2025-12;1107;Ewos;CLP;alimentación invierno
+ENG-200;2025-01;$1.026;BioMar;CLP;con pigmentación
+Engorda 200;2025-02;1041;Ewos;CLP;ración estándar
+ENG-200;2025-03;1.057,00;Ewos;CLP;dieta medicada
+Engorda 200;2025-04;$1.072;BioMar;CLP;nutrición engorda
+ENG-200;2025-05;$1.088;BioMar;CLP;dieta medicada
+ENG-200;2025-06;$1.103;Ewos;CLP;dieta medicada
+engorda200;2025-08;1.134,00;Skretting;CLP;alimentación invierno
+ENG-200;2025-09;1.149,00;Ewos;CLP;dieta medicada
+engorda200;2025-10;1.165,00;BioMar;CLP;alimentación invierno
+Engorda 200;2025-11;1180;BioMar;CLP;alimentación invierno
+ENG-200;2025-12;1195;BioMar;CLP;alimentación invierno
+pigmentado;2025-01;$1.188;Ewos;CLP;con pigmentación
+pigmentado;2025-03;$1.223;Skretting;CLP;alimentación invierno
+PIG;2025-04;$1.241;Ewos;CLP;nutrición engorda
+PIG;2025-05;1.259,00;Skretting;CLP;dieta medicada
+pigmentado;2025-06;1.277,00;Ewos;CLP;ración estándar
+Pigmentado;2025-07;1.294,00;Skretting;CLP;alimentación invierno
+pigmentado;2025-08;1312;Skretting;CLP;con pigmentación
+pigmentado;2025-09;1330;Ewos;CLP;ración estándar
+PIG;2025-10;1.348,00;Ewos;CLP;ración estándar
+pigmentado;2025-11;$1.366;BioMar;CLP;con pigmentación
+Pigmentado;2025-12;1383;BioMar;CLP;alimentación invierno
+TOTAL;;;;;

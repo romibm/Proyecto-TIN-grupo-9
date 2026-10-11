@@ -1,0 +1,100 @@
+{
+ "empresa": "AquaFiordo",
+ "anio": 2025,
+ "eventos": [
+  {
+   "evento_id": "EV-902",
+   "centro_id": 92,
+   "tipo": "Caligus",
+   "fecha_inicio": "2025-05-10",
+   "fecha_fin": "2025-05-30",
+   "mortalidad_asociada": "1500",
+   "tratamiento": "Baño antiparasitario",
+   "jaulas_afectadas": []
+  },
+  {
+   "evento_id": "EV-8001",
+   "centro_id": 7,
+   "tipo": "Caligus",
+   "fecha_inicio": "2025-08-01",
+   "fecha_fin": "15/10/2025",
+   "mortalidad_asociada": 70399,
+   "tratamiento": "Baño antiparasitario",
+   "jaulas_afectadas": [
+    37,
+    38,
+    39,
+    40
+   ]
+  },
+  {
+   "evento_id": "EV-8003",
+   "centro_id": 5,
+   "tipo": "Caligus",
+   "fecha_inicio": "2025-05-07",
+   "fecha_fin": "2025-05-28",
+   "mortalidad_asociada": 6487,
+   "tratamiento": "Baño antiparasitario",
+   "jaulas_afectadas": [
+    30,
+    25
+   ]
+  },
+  {
+   "evento_id": "EV-8004",
+   "centro_id": 4,
+   "tipo": "Branquitis",
+   "fecha_inicio": "2025-05-12",
+   "fecha_fin": "2025-05-28",
+   "mortalidad_asociada": 2112,
+   "tratamiento": "Vacunación",
+   "jaulas_afectadas": [
+    23,
+    22
+   ]
+  },
+  {
+   "evento_id": "EV-903",
+   "centro_id": 93,
+   "tipo": "Caligus",
+   "fecha_inicio": "2025-05-10",
+   "fecha_fin": "2025-05-30",
+   "mortalidad_asociada": "1500",
+   "tratamiento": "Baño antiparasitario",
+   "jaulas_afectadas": []
+  },
+  {
+   "evento_id": "EV-901",
+   "centro_id": 91,
+   "tipo": "Caligus",
+   "fecha_inicio": "2025-05-10",
+   "fecha_fin": "2025-05-30",
+   "mortalidad_asociada": "1500",
+   "tratamiento": "Baño antiparasitario",
+   "jaulas_afectadas": []
+  },
+  {
+   "evento_id": "EV-8002",
+   "centro_id": 2,
+   "tipo": "SRS",
+   "fecha_inicio": "2025-05-10",
+   "fecha_fin": "2025-05-28",
+   "mortalidad_asociada": 6394,
+   "tratamiento": "Antibiótico",
+   "jaulas_afectadas": [
+    11,
+    9
+   ]
+  },
+  {
+   "evento_id": "EV-900",
+   "centro_id": 90,
+   "tipo": "Caligus",
+   "fecha_inicio": "2025-05-10",
+   "fecha_fin": "2025-05-30",
+   "mortalidad_asociada": "1500",
+   "tratamiento": "Baño antiparasitario",
+   "jaulas_afectadas": []
+  }
+ ]
+}
