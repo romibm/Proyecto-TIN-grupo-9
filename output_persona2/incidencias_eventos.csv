@@ -1,0 +1,6 @@
+﻿evento_id,motivo,accion,detalle
+EV-902,evento_invalido,excluido,el centro 92 no existe en el catálogo
+EV-8001,fecha_fin_reformateada,corregido,15/10/2025 -> 2025-10-15
+EV-903,evento_invalido,excluido,el centro 93 no existe en el catálogo
+EV-901,evento_invalido,excluido,el centro 91 no existe en el catálogo
+EV-900,evento_invalido,excluido,el centro 90 no existe en el catálogo

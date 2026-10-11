@@ -1,0 +1,34 @@
+﻿fila_csv,tipo_alimento,tipo_original,mes,precio_clp_kg,proveedor
+2,Engorda 100,engorda100,2025-01,950.0,BioMar
+3,Engorda 100,engorda100,2025-02,964.0,Ewos
+4,Engorda 100,Engorda 100,2025-03,978.0,Ewos
+5,Engorda 100,Engorda 100,2025-04,993.0,Ewos
+7,Engorda 100,Engorda 100,2025-06,1021.0,Skretting
+8,Engorda 100,ENG-100,2025-07,1036.0,Ewos
+9,Engorda 100,engorda100,2025-08,1050.0,BioMar
+10,Engorda 100,ENG-100,2025-09,1064.0,BioMar
+12,Engorda 100,Engorda 100,2025-10,1078.0,BioMar
+13,Engorda 100,Engorda 100,2025-11,1092.0,BioMar
+14,Engorda 100,Engorda 100,2025-12,1107.0,Ewos
+15,Engorda 200,ENG-200,2025-01,1026.0,BioMar
+16,Engorda 200,Engorda 200,2025-02,1041.0,Ewos
+17,Engorda 200,ENG-200,2025-03,1057.0,Ewos
+18,Engorda 200,Engorda 200,2025-04,1072.0,BioMar
+19,Engorda 200,ENG-200,2025-05,1088.0,BioMar
+20,Engorda 200,ENG-200,2025-06,1103.0,Ewos
+21,Engorda 200,engorda200,2025-08,1134.0,Skretting
+22,Engorda 200,ENG-200,2025-09,1149.0,Ewos
+23,Engorda 200,engorda200,2025-10,1165.0,BioMar
+24,Engorda 200,Engorda 200,2025-11,1180.0,BioMar
+25,Engorda 200,ENG-200,2025-12,1195.0,BioMar
+26,Pigmentado,pigmentado,2025-01,1188.0,Ewos
+27,Pigmentado,pigmentado,2025-03,1223.0,Skretting
+28,Pigmentado,PIG,2025-04,1241.0,Ewos
+29,Pigmentado,PIG,2025-05,1259.0,Skretting
+30,Pigmentado,pigmentado,2025-06,1277.0,Ewos
+31,Pigmentado,Pigmentado,2025-07,1294.0,Skretting
+32,Pigmentado,pigmentado,2025-08,1312.0,Skretting
+33,Pigmentado,pigmentado,2025-09,1330.0,Ewos
+34,Pigmentado,PIG,2025-10,1348.0,Ewos
+35,Pigmentado,pigmentado,2025-11,1366.0,BioMar
+36,Pigmentado,Pigmentado,2025-12,1383.0,BioMar
