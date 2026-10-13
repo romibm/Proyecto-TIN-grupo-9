@@ -57,11 +57,11 @@ Skyring tiene el FCR más alto bajo ambas definiciones. Su cambio porcentual tam
 
 ## Cómo ejecutar
 
-Colocar `metrics_fcr.py` junto a `main.py` y ejecutar:
+Colocar `metricas_fcr.py` junto a `main.py` y ejecutar:
 
 ```powershell
 py main.py
-py metrics_fcr.py
+py metricas_fcr.py
 ```
 
 La salida es `output_persona3/fcr_por_centro.csv`. Incluye los totales usados, el crecimiento neto y la biomasa muerta estimados, ambos FCR, la diferencia absoluta y el cambio porcentual.
