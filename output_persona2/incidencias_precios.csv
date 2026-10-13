@@ -1,0 +1,4 @@
+﻿fila_csv,motivo,accion,detalle
+6,registro_invalido,excluido,número ausente: 'sin dato'
+11,fila_no_registro,descartada,tipo_alimento
+37,fila_no_registro,descartada,TOTAL
