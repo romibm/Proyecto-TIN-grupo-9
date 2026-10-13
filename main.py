@@ -159,6 +159,16 @@ def prepare_operation(tables, centers, lots, audit):
             observed_loss = row['poblacion'] - tomorrow['poblacion']
             if observed_loss != row['mortalidad_n']:
                 audit.add(source, index, 'mortalidad_incompatible_con_balance', 'excluido', f"mortalidad={row['mortalidad_n']}; caída de población siguiente={observed_loss}; se supone ausencia de movimientos no registrados")
+        
+        # excluimos mortalidad superior a la población
+        if row['mortalidad_n'] > row['poblacion']:
+            audit.add(
+                source, index, 'mortalidad_mayor_que_poblacion', 'excluido',
+                f"mortalidad={row['mortalidad_n']}, población={row['poblacion']}"
+            )
+
+        ratio = row['alimento_kg'] / row['crecimiento_kg']
+        
         ratio = row['alimento_kg'] / row['crecimiento_kg']
         if ratio < MIN_FEED_GROWTH_RATIO:
             audit.add(source, index, 'alimento_crecimiento_demasiado_bajo', 'excluido', f'Razón diaria={ratio}; no considerada por ruido en los datos.')
