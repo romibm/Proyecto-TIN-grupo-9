@@ -1,21 +1,23 @@
 # AquaFiordo
 
-El trabajo tiene dos scripts que se ejecutan en este orden:
+El trabajo tiene tres scripts que se ejecutan en este orden:
 
 1. `main.py` (Romina) limpia la base SQLite y genera `output_persona1/datos_sqlite_limpios.sqlite`.
 2. `limpieza_externas.py` (Antonia) limpia el CSV de precios, el JSON de eventos sanitarios y la API del dólar, calcula la cobertura y hace los gráficos. Necesita la base del paso 1 para validar los eventos.
+3. `metricas_fcr.py` (Romina) calcula el FCR bruto y neto estimado por centro, su diferencia absoluta y el cambio porcentual. Utiliza la base limpia del paso 1.
 
 Las fuentes originales se abren en modo de solo lectura y se conservan intactas.
 
 ## Ejecutar
 
-Se necesita Python 3.10 o superior. `main.py` no necesita paquetes adicionales. `limpieza_externas.py` necesita `matplotlib` solo para los gráficos (`pip install matplotlib`) y acceso a internet para consultar la API del dólar.
+Se necesita Python 3.10 o superior. `main.py` y `metricas_fcr.py` no necesitan paquetes adicionales. `limpieza_externas.py` necesita `matplotlib` solo para los gráficos (`pip install matplotlib`) y acceso a internet para consultar la API del dólar.
 
 Descomprimir este paquete en una carpeta nueva y abrir una terminal en la carpeta que contiene los scripts. En Windows:
 
 ```powershell
 py main.py
 py limpieza_externas.py
+py metricas_fcr.py
 ```
 
 En Linux o macOS:
@@ -23,6 +25,7 @@ En Linux o macOS:
 ```bash
 python3 main.py
 python3 limpieza_externas.py
+python3 metricas_fcr.py
 ```
 
 Los archivos originales deben estar en la carpeta `archivos/`:
@@ -42,11 +45,11 @@ Los criterios y supuestos están en `DECISIONES_SQLITE.md` (Romina) y `DECISIONE
 Con la base incluida, la salida esperada es:
 
 ```text
-OK SQLite: 13,158 filas de operación conservadas; 42 cosechas válidas
+OK SQLite: 13,157 filas de operación conservadas; 42 cosechas válidas
 Archivo: <ruta del proyecto>/output_persona1/datos_sqlite_limpios.sqlite
 ```
 
-`13,158` significa 13.158 filas. La ejecución tarda aproximadamente uno a dos segundos en el entorno de verificación.
+`13,157` significa 13.157 filas. La ejecución tarda aproximadamente uno a dos segundos en el entorno de verificación.
 
 ## Trabajo realizado
 
@@ -128,6 +131,36 @@ El total está dominado por la fuente más pequeña, los eventos. Debe leerse ju
 - La mortalidad observada usa `operacion_limpia`, que ya excluyó filas según los criterios de la Romina. Puede ser menor que la real, de modo que la diferencia con el JSON podría estar sobreestimada.
 - En los cuatro eventos válidos la mortalidad declarada en el JSON es mayor que la observada en el centro. En EV-8001 (Skyring) declara 70.399 peces y la operación registra 66.153 en todo el centro y 45.862 en las jaulas afectadas.
 - Los meses sin precio se muestran como huecos y no se estiman.
+
+# Parte 3 — FCR bruto y neto estimado (Romina)
+
+`metricas_fcr.py` utiliza las tablas `operacion_limpia` y `centros` de `output_persona1/datos_sqlite_limpios.sqlite`. Calcula los resultados por centro para las observaciones conservadas de 2025.
+
+## Trabajo realizado
+
+- FCR bruto: alimento total dividido por crecimiento bruto total
+- FCR neto estimado: alimento total dividido por crecimiento bruto total menos biomasa muerta estimada
+- Comparación: diferencia absoluta y cambio porcentual del FCR neto estimado respecto del bruto
+
+Se interpreta `crecimiento_kg` como crecimiento antes de descontar mortalidad. La biomasa muerta se estima por observación como `mortalidad_n × biomasa_kg / poblacion`, suponiendo que los peces muertos tenían el peso promedio de su jaula y lote en ese día.
+
+Ambos FCR se expresan en kg de alimento por kg de crecimiento. El neto estimado aumenta al descontar las pérdidas porque utiliza el mismo alimento y un denominador menor.
+
+Las fórmulas exactas, filtros, supuestos, resultados y su explicación están en `FICHA_FCR.md`.
+
+## Resultado
+
+Se genera `output_persona3/fcr_por_centro.csv`, con una fila por centro. Incluye los totales de alimento y crecimiento, la biomasa muerta y el crecimiento neto estimados, ambos FCR, su diferencia absoluta y el cambio porcentual.
+
+La salida esperada es:
+
+```text
+OK FCR bruto y neto estimado: 7 centros
+Archivo: <ruta del proyecto>/output_persona3/fcr_por_centro.csv
+```
+
+No se excluyen filas adicionales en este cálculo. Se verificó que los resultados del CSV coincidan con los valores presentados en la ficha.
+
 
 # Uso de IA
 
