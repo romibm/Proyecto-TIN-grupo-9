@@ -174,6 +174,26 @@ Genera `output_costo/costo_mortalidad.xlsx`. La salida esperada termina con:
 OK costo y mortalidad. Centro top: 7
 ```
 
+# Parte 5 — Gráficos e interpretación
+
+Después de generar las salidas de las partes anteriores, instalar las dependencias y ejecutar:
+
+```bash
+python -m pip install matplotlib pandas openpyxl
+python costo_mortalidad.py
+python graficos_costos.py
+python graficos_fcr.py
+python graficos_mortalidad.py --evento EV-8001
+python graficos_basal.py --evento EV-8001
+```
+
+Los cuatro scripts de gráficos generan imágenes PNG, los datos utilizados en CSV y su interpretación en Markdown dentro de `output_persona5/`.
+
+Se comparan el costo de alimento por centro, el FCR bruto y neto estimado, la evolución diaria de mortalidad y la mortalidad observada frente a la basal del evento EV-8001.
+
+Los gráficos de costos y basal utilizan `output_costo/costo_mortalidad.xlsx`, generado por `costo_mortalidad.py`. La referencia basal se calcula por lote con observaciones sin evento; el exceso estimado no demuestra atribución causal.
+
+
 # Uso de IA
 
 Se utilizó IA para ayudar con partes del código y la documentación:
