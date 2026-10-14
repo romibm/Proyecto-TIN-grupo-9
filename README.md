@@ -114,8 +114,6 @@ Además, hay precio válido en 33 de las 36 combinaciones de tipo de alimento y 
 
 El total está dominado por la fuente más pequeña, los eventos. Debe leerse junto con el desglose por fuente y no como el porcentaje de todos los datos del trabajo.
 
-**Actualizar al correr con internet:** los valores de la tabla se obtuvieron sin acceso a la API del dólar. Al ejecutar con internet, `cobertura.txt` incluye el dólar y cambian la fila del dólar y el total. En ese caso hay que copiar los números nuevos a esta tabla.
-
 ## Gráficos
 
 | Archivo (en `output_persona2/graficos/`) | Qué muestra |
@@ -129,7 +127,6 @@ El total está dominado por la fuente más pequeña, los eventos. Debe leerse ju
 ## Limitaciones
 
 - La mortalidad observada usa `operacion_limpia`, que ya excluyó filas según los criterios de la Romina. Puede ser menor que la real, de modo que la diferencia con el JSON podría estar sobreestimada.
-- En los cuatro eventos válidos la mortalidad declarada en el JSON es mayor que la observada en el centro. En EV-8001 (Skyring) declara 70.399 peces y la operación registra 66.153 en todo el centro y 45.862 en las jaulas afectadas.
 - Los meses sin precio se muestran como huecos y no se estiman.
 
 # Parte 3 — FCR bruto y neto estimado (Romina)
@@ -161,6 +158,36 @@ Archivo: <ruta del proyecto>/output_persona3/fcr_por_centro.csv
 
 No se excluyen filas adicionales en este cálculo. Se verificó que los resultados del CSV coincidan con los valores presentados en la ficha.
 
+# Parte 4 — Costo por kg y mortalidad atribuible al evento (Antonia)
+
+`metricas_evento_costo.py` calcula el costo de alimento por kg de crecimiento, la mortalidad atribuible al evento sanitario y la descomposición de la brecha de costo del centro más caro. Usa `output_persona1/datos_sqlite_limpios.sqlite` y, de `output_persona2/`, `precios_limpios.csv`, `eventos_limpios.csv` y `dolar_limpio.csv` (si el dólar no existe, las columnas en USD quedan vacías).
+
+Se ejecuta después de `main.py` y `limpieza_externas.py`. No necesita paquetes adicionales:
+
+```powershell
+py metricas_evento_costo.py
+```
+
+```bash
+python3 metricas_evento_costo.py
+```
+
+## Resultado
+
+Se crea `output_persona3/` con:
+
+| Archivo | Contenido |
+| --- | --- |
+| `tabla_integrada.csv` | Una fila por fecha, centro y jaula: operación diaria, precio del mes, costo del alimento en CLP y USD, y evento sanitario |
+| `costo_por_kg_por_centro.csv` | Alimento, crecimiento, biomasa muerta, FCR bruto y neto, y costo por kg bruto y neto por centro |
+| `mortalidad_evento.csv` | Por evento válido: mortalidad declarada, observada, basal y atribuible, y FCR dentro y fuera del evento |
+| `descomposicion_costo.csv` | Parte de la brecha del centro más caro explicada por precio, FCR bruto y mortalidad |
+| `efecto_evento_skyring.csv` | Efecto del evento en CLP por kg y en pesos al año |
+| `detalle_mensual_centro_mayor_costo.csv` | Detalle mes a mes del centro más caro |
+
+La salida esperada termina con `OK: archivos en <ruta del proyecto>/output_persona3`. Tarda menos de un segundo.
+
+El precio del alimento de cada mes es el promedio simple de los tipos con precio válido, porque la operación diaria no indica el tipo. El FCR neto mensual de Skyring de agosto a octubre no es interpretable (crecimiento neto negativo en agosto). Las fórmulas, decisiones, supuestos y resultados están en `FICHA_COSTO_EVENTO.md`.
 
 # Uso de IA
 
