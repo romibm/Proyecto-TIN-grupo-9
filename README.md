@@ -1,16 +1,17 @@
 # AquaFiordo
 
-El trabajo tiene tres scripts que se ejecutan en este orden:
+El trabajo tiene cuatro scripts que se ejecutan en este orden:
 
-1. `main.py` (Romina) limpia la base SQLite y genera `output_persona1/datos_sqlite_limpios.sqlite`.
-2. `limpieza_externas.py` (Antonia) limpia el CSV de precios, el JSON de eventos sanitarios y la API del dólar, calcula la cobertura y hace los gráficos. Necesita la base del paso 1 para validar los eventos.
-3. `metricas_fcr.py` (Romina) calcula el FCR bruto y neto estimado por centro, su diferencia absoluta y el cambio porcentual. Utiliza la base limpia del paso 1.
+1. `main.py` limpia la base SQLite y genera `output_persona1/datos_sqlite_limpios.sqlite`.
+2. `limpieza_externas.py` limpia el CSV de precios, el JSON de eventos sanitarios y la API del dólar, calcula la cobertura y hace los gráficos. Necesita la base del paso 1 para validar los eventos.
+3. `metricas_fcr.py` calcula el FCR bruto y neto estimado por centro, su diferencia absoluta y el cambio porcentual. Utiliza la base limpia del paso 1.
+4. `costo_mortalidad.py` calcula el costo de alimento por kg, identifica el centro con más costo, la mortalidad basal, el exceso de mortalidad por evento sanitario y el impacto en pesos. Usa las salidas de los pasos 1 y 2.
 
 Las fuentes originales se abren en modo de solo lectura y se conservan intactas.
 
 ## Ejecutar
 
-Se necesita Python 3.10 o superior. `main.py` y `metricas_fcr.py` no necesitan paquetes adicionales. `limpieza_externas.py` necesita `matplotlib` solo para los gráficos (`pip install matplotlib`) y acceso a internet para consultar la API del dólar.
+Se necesita Python 3.10 o superior. `main.py` y `metricas_fcr.py` no necesitan paquetes adicionales. `limpieza_externas.py` necesita `matplotlib` para los gráficos y acceso a internet para la API del dólar (si no hay internet, usa la respuesta guardada). `costo_mortalidad.py` necesita `pandas` y `openpyxl`. 
 
 Descomprimir este paquete en una carpeta nueva y abrir una terminal en la carpeta que contiene los scripts. En Windows:
 
@@ -18,6 +19,7 @@ Descomprimir este paquete en una carpeta nueva y abrir una terminal en la carpet
 py main.py
 py limpieza_externas.py
 py metricas_fcr.py
+py costo_mortalidad.py
 ```
 
 En Linux o macOS:
@@ -26,6 +28,7 @@ En Linux o macOS:
 python3 main.py
 python3 limpieza_externas.py
 python3 metricas_fcr.py
+python3 costo_mortalidad.py
 ```
 
 Los archivos originales deben estar en la carpeta `archivos/`:
@@ -36,9 +39,9 @@ Los archivos originales deben estar en la carpeta `archivos/`:
 | `origen_costos_alimento.csv` | `limpieza_externas.py` |
 | `origen_eventos_sanitarios.json` | `limpieza_externas.py` |
 
-Los criterios y supuestos están en `DECISIONES_SQLITE.md` (Romina) y `DECISIONES_EXTERNAS.md` (Antonia). Los valores utilizados en `main.py` están al principio del archivo.
+Los criterios y supuestos están en `DECISIONES_SQLITE.md` y `DECISIONES_EXTERNAS.md`. Los valores utilizados en `main.py` están al principio del archivo.
 
-# Parte 1 — Limpieza de SQLite (Romina)
+# Parte 1 — Limpieza de SQLite
 
 `main.py` lee `origen_acuicultura.sqlite`, aplica las decisiones de limpieza acordadas y guarda una base limpia. El script crea `output_persona1/datos_sqlite_limpios.sqlite`.
 
@@ -75,9 +78,9 @@ Cada ejecución vuelve a generar la base limpia. Se escribe primero una base tem
 
 Se verificó que las filas conservadas coincidan con las decisiones acordadas y que dos ejecuciones produzcan los mismos datos.
 
-# Parte 2 — Precios, eventos sanitarios y dólar (Antonia)
+# Parte 2 — Precios, eventos sanitarios y dólar
 
-`limpieza_externas.py` lee el CSV de precios, el JSON de eventos y la API del dólar. Crea la carpeta `output_persona2/`. Si falta la base de la Romina, el script se detiene porque necesita validar los eventos contra sus centros, jaulas y operación diaria.
+`limpieza_externas.py` lee el CSV de precios, el JSON de eventos y la API del dólar. Crea la carpeta `output_persona2/`. Si falta la base de la parte 1, el script se detiene porque necesita validar los eventos contra sus centros, jaulas y operación diaria.
 
 ## Trabajo realizado
 
@@ -107,14 +110,10 @@ Un registro queda fuera cuando se lee de la fuente y una regla de calidad lo exc
 | --- | --- | --- | --- | --- |
 | Precios (CSV) | 34 | 1 | 2,9 % | Un precio `sin dato` |
 | Eventos (JSON) | 8 | 4 | 50,0 % | Cuatro eventos de centros que no existen (90 a 93) |
-| Dólar (API) | sin datos | sin datos | sin datos | La ejecución de verificación no tuvo acceso a la API |
-| **Total** | **42** | **5** | **11,9 %** | |
+| Dólar (API) | 248 | 0 | 0 % | La ejecución de verificación tuvo acceso a la API |
+| **Total** | **290** | **5** | **1,7 %** | |
 
 Además, hay precio válido en 33 de las 36 combinaciones de tipo de alimento y mes (91,7 %). Faltan Engorda 100 en mayo, Engorda 200 en julio y Pigmentado en febrero. Los dos últimos meses ni siquiera aparecen como fila en el CSV.
-
-El total está dominado por la fuente más pequeña, los eventos. Debe leerse junto con el desglose por fuente y no como el porcentaje de todos los datos del trabajo.
-
-**Actualizar al correr con internet:** los valores de la tabla se obtuvieron sin acceso a la API del dólar. Al ejecutar con internet, `cobertura.txt` incluye el dólar y cambian la fila del dólar y el total. En ese caso hay que copiar los números nuevos a esta tabla.
 
 ## Gráficos
 
@@ -128,11 +127,11 @@ El total está dominado por la fuente más pequeña, los eventos. Debe leerse ju
 
 ## Limitaciones
 
-- La mortalidad observada usa `operacion_limpia`, que ya excluyó filas según los criterios de la Romina. Puede ser menor que la real, de modo que la diferencia con el JSON podría estar sobreestimada.
+- La mortalidad observada usa `operacion_limpia`, que ya excluyó filas según los criterios de la parte 1. Puede ser menor que la real, de modo que la diferencia con el JSON podría estar sobreestimada.
 - En los cuatro eventos válidos la mortalidad declarada en el JSON es mayor que la observada en el centro. En EV-8001 (Skyring) declara 70.399 peces y la operación registra 66.153 en todo el centro y 45.862 en las jaulas afectadas.
 - Los meses sin precio se muestran como huecos y no se estiman.
 
-# Parte 3 — FCR bruto y neto estimado (Romina)
+# Parte 3 — FCR bruto y neto estimado
 
 `metricas_fcr.py` utiliza las tablas `operacion_limpia` y `centros` de `output_persona1/datos_sqlite_limpios.sqlite`. Calcula los resultados por centro para las observaciones conservadas de 2025.
 
@@ -161,7 +160,22 @@ Archivo: <ruta del proyecto>/output_persona3/fcr_por_centro.csv
 
 No se excluyen filas adicionales en este cálculo. Se verificó que los resultados del CSV coincidan con los valores presentados en la ficha.
 
+# Parte 4 — Costo por kg, mortalidad basal e impacto en pesos
+
+`costo_mortalidad.py` usa `operacion_limpia` (paso 1) y `precios_limpios.csv` y `eventos_limpios.csv` (paso 2).
+
+- Costo por kg = Σ(alimento_kg × precio del mes) ÷ Σ crecimiento_kg. El precio del mes es el promedio de los tipos con precio observado ese mes (no se imputan faltantes).
+- Mortalidad basal por lote = muertes ÷ población en días sin evento. Exceso = muertes observadas en días de evento − tasa basal × población.
+- Impacto en pesos = alimento extra por FCR peor + alimento invertido en peces muertos por el evento, al precio medio pagado.
+
+Genera `output_costo/costo_mortalidad.xlsx`. La salida esperada termina con:
+
+```text
+OK costo y mortalidad. Centro top: 7
+```
 
 # Uso de IA
 
-Se utilizó IA para ayudar con partes del código y la documentación.
+Se utilizó IA para ayudar con partes del código y la documentación:
+
+- Claude: Para identificar fallas generales de los códigos

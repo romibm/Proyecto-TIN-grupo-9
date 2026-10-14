@@ -4,4 +4,4 @@ Dólar (API): 0 de 248 excluidos (0.0%)
 TOTAL: 5 de 290 registros fuera (1.7%)
 Cobertura de precios: 33 de 36 combinaciones tipo-mes con precio válido (91.7%)
 Combinaciones tipo-mes sin precio: Engorda 100 2025-05; Engorda 200 2025-07; Pigmentado 2025-02
-Dólar: API en línea
+Dólar: caché de una ejecución anterior
