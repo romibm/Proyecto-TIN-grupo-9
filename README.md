@@ -100,7 +100,6 @@ Se verificó que las filas conservadas coincidan con las decisiones acordadas y 
 | `incidencias_precios.csv`, `incidencias_eventos.csv`, `incidencias_dolar.csv` | Fila u origen, motivo, acción (excluido, corregido o descartado) y detalle |
 | `dolar_2025_crudo.json` | Respuesta de la API guardada |
 | `cobertura.txt` | Registros excluidos por fuente y en total |
-| `graficos/` | Gráficos del informe |
 
 ## Cobertura de datos
 
@@ -115,20 +114,9 @@ Un registro queda fuera cuando se lee de la fuente y una regla de calidad lo exc
 
 Además, hay precio válido en 33 de las 36 combinaciones de tipo de alimento y mes (91,7 %). Faltan Engorda 100 en mayo, Engorda 200 en julio y Pigmentado en febrero. Los dos últimos meses ni siquiera aparecen como fila en el CSV.
 
-## Gráficos
-
-| Archivo (en `output_persona2/graficos/`) | Qué muestra |
-| --- | --- |
-| `1_precio_alimento_mensual.png` | Precio mensual por tipo de alimento. Los huecos son meses sin dato |
-| `2_cobertura_por_fuente.png` | Registros usados y excluidos por fuente |
-| `3_mortalidad_declarada_vs_observada.png` | Mortalidad de cada evento válido: declarada, observada en las jaulas afectadas y observada en todo el centro |
-| `4_dolar_mensual.png` | Dólar promedio mensual (solo con datos de la API) |
-| `5_precio_alimento_usd.png` | Precio promedio del alimento en dólares por kilo (solo con datos de la API) |
-
 ## Limitaciones
 
 - La mortalidad observada usa `operacion_limpia`, que ya excluyó filas según los criterios de la parte 1. Puede ser menor que la real, de modo que la diferencia con el JSON podría estar sobreestimada.
-- En los cuatro eventos válidos la mortalidad declarada en el JSON es mayor que la observada en el centro. En EV-8001 (Skyring) declara 70.399 peces y la operación registra 66.153 en todo el centro y 45.862 en las jaulas afectadas.
 - Los meses sin precio se muestran como huecos y no se estiman.
 
 # Parte 3 — FCR bruto y neto estimado
