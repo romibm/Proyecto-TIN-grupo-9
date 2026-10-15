@@ -13,7 +13,6 @@ YEAR = 2025
 API_DOLAR = f"https://mindicador.cl/api/dolar/{YEAR}"
 CARPETA = Path(__file__).resolve().parent
 SALIDA = CARPETA / "output_persona2"
-GRAFICOS = SALIDA / "graficos"
 TIPOS = {"engorda100": "Engorda 100", "eng100": "Engorda 100",
          "engorda200": "Engorda 200", "eng200": "Engorda 200",
          "pigmentado": "Pigmentado", "pig": "Pigmentado"}
@@ -178,90 +177,6 @@ def limpiar_dolar():
     filas = [{"fecha": f.isoformat(), "clp_por_usd": v} for f, v in sorted(por_fecha.items())]
     return filas, incidencias, len(serie), estado
 
-def graficos(precios, eventos, dolar, cobertura):
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from matplotlib.ticker import FuncFormatter
-
-    plt.rcParams.update({"font.size": 12, "axes.spines.top": False, "axes.spines.right": False})
-    GRIS, AZUL, ROJO, NARANJA = "#8a9099", "#2f6f9f", "#c0392b", "#e08e0b"
-    fuente = "Fuente: origen_costos_alimento.csv, origen_eventos_sanitarios.json, mindicador.cl y datos_sqlite_limpios.sqlite; cálculo propio."
-    miles = FuncFormatter(lambda x, _: f"{x:,.0f}".replace(",", "."))
-    GRAFICOS.mkdir(parents=True, exist_ok=True)
-
-    def guardar(fig, nombre):
-        fig.text(0.01, 0.005, fuente, fontsize=8, color="#555", ha="left", va="bottom")
-        fig.tight_layout(rect=(0, 0.04, 1, 1))
-        fig.savefig(GRAFICOS / nombre, dpi=200)
-        plt.close(fig)
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-    for tipo, color in zip(("Engorda 100", "Engorda 200", "Pigmentado"), (AZUL, NARANJA, ROJO)):
-        serie = {r["mes"]: r["precio_clp_kg"] for r in precios if r["tipo_alimento"] == tipo}
-        meses = [f"{YEAR}-{m:02d}" for m in range(1, 13)]
-        ax.plot(range(12), [serie.get(m, float("nan")) for m in meses], marker="o", color=color, label=tipo)
-    ax.set_xticks(range(12), ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"])
-    ax.yaxis.set_major_formatter(miles)
-    ax.set_ylabel("CLP por kg de alimento")
-    ax.legend(frameon=False)
-    ax.set_title("Precio del alimento por tipo y mes, 2025 (CLP/kg; los huecos son meses sin dato)", loc="left", fontsize=12)
-    guardar(fig, "1_precio_alimento_mensual.png")
-
-    fuentes = [c for c in cobertura if c["total"]]
-    fig, ax = plt.subplots(figsize=(9, 4.5))
-    nombres = [c["fuente"] for c in fuentes]
-    usados = [c["total"] - c["excluidos"] for c in fuentes]
-    fuera = [c["excluidos"] for c in fuentes]
-    ax.barh(nombres, usados, color=AZUL, label="Usados")
-    ax.barh(nombres, fuera, left=usados, color=ROJO, label="Excluidos")
-    for y, (u, f) in enumerate(zip(usados, fuera)):
-        ax.text(u + f + 0.4, y, f"{100 * f / (u + f):.1f}% fuera ({f} de {u + f})", va="center", fontsize=10)
-    ax.set_xlim(0, max(u + f for u, f in zip(usados, fuera)) * 1.45)
-    ax.set_xlabel("registros leídos")
-    ax.legend(frameon=False, loc="lower right")
-    ax.set_title("Registros usados y excluidos por fuente, 2025 (cantidad de registros)", loc="left", fontsize=12)
-    guardar(fig, "2_cobertura_por_fuente.png")
-
-    if eventos:
-        fig, ax = plt.subplots(figsize=(10, 5))
-        x = range(len(eventos))
-        w = 0.27
-        ax.bar([i - w for i in x], [e["mortalidad_declarada_json_n"] for e in eventos], w, color=AZUL, label="Declarada en el JSON")
-        ax.bar(list(x), [e["mortalidad_observada_jaulas_afectadas_n"] for e in eventos], w, color=ROJO, label="Observada en jaulas afectadas")
-        ax.bar([i + w for i in x], [e["mortalidad_observada_centro_n"] for e in eventos], w, color=GRIS, label="Observada en todo el centro")
-        ax.set_xticks(list(x), [f"{e['evento_id']}\n{e['tipo']} · {e['centro'].replace('Centro ', '')}" for e in eventos], fontsize=9)
-        ax.yaxis.set_major_formatter(miles)
-        ax.set_ylabel("peces muertos durante el evento")
-        ax.legend(frameon=False)
-        ax.set_title("Mortalidad declarada y observada en los eventos sanitarios válidos, 2025 (peces)", loc="left", fontsize=12)
-        guardar(fig, "3_mortalidad_declarada_vs_observada.png")
-
-    if dolar:
-        por_mes = collections.defaultdict(list)
-        for r in dolar:
-            por_mes[r["fecha"][:7]].append(r["clp_por_usd"])
-        meses = sorted(por_mes)
-        usd = {m: sum(v) / len(v) for m, v in por_mes.items()}
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.plot(range(len(meses)), [usd[m] for m in meses], marker="o", color=AZUL)
-        ax.set_xticks(range(len(meses)), [m[5:] for m in meses])
-        ax.set_ylabel("CLP por USD (promedio del mes)")
-        ax.set_title("Dólar observado promedio mensual, 2025 (CLP/USD)", loc="left", fontsize=12)
-        guardar(fig, "4_dolar_mensual.png")
-        prom = collections.defaultdict(list)
-        for r in precios:
-            if r["mes"] in usd:
-                prom[r["mes"]].append(r["precio_clp_kg"] / usd[r["mes"]])
-        if prom:
-            fig, ax = plt.subplots(figsize=(10, 5))
-            ms = sorted(prom)
-            ax.plot(range(len(ms)), [sum(prom[m]) / len(prom[m]) for m in ms], marker="o", color=NARANJA)
-            ax.set_xticks(range(len(ms)), [m[5:] for m in ms])
-            ax.set_ylabel("USD por kg de alimento")
-            ax.set_title("Precio promedio del alimento en USD, 2025 (USD/kg, promedio de los tres tipos)", loc="left", fontsize=12)
-            guardar(fig, "5_precio_alimento_usd.png")
-
 def main():
     SALIDA.mkdir(exist_ok=True)
     precios, inc_p, n_precios, huecos = limpiar_precios()
@@ -290,11 +205,6 @@ def main():
     lineas.append(f"Dólar: {estado_dolar}")
     (SALIDA / "cobertura.txt").write_text("\n".join(lineas) + "\n", encoding="utf-8")
     print("\n".join(lineas))
-    try:
-        graficos(precios, eventos, dolar, cobertura)
-        print(f"Gráficos en {GRAFICOS}")
-    except ImportError:
-        print("Falta matplotlib: pip install matplotlib (los CSV ya se generaron)")
 
 if __name__ == "__main__":
     main()
