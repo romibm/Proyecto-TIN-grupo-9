@@ -1,49 +1,97 @@
 # AquaFiordo
 
-El trabajo tiene cuatro scripts que se ejecutan en este orden:
+`main.py` ejecuta el proceso completo de la Entrega 1, en este orden:
 
-1. `main.py` limpia la base SQLite y genera `output_persona1/datos_sqlite_limpios.sqlite`.
-2. `limpieza_externas.py` limpia el CSV de precios, el JSON de eventos sanitarios y la API del dólar, calcula la cobertura y hace los gráficos. Necesita la base del paso 1 para validar los eventos.
-3. `metricas_fcr.py` calcula el FCR bruto y neto estimado por centro, su diferencia absoluta y el cambio porcentual. Utiliza la base limpia del paso 1.
-4. `costo_mortalidad.py` calcula el costo de alimento por kg, identifica el centro con más costo, la mortalidad basal, el exceso de mortalidad por evento sanitario y el impacto en pesos. Usa las salidas de los pasos 1 y 2.
+1. Limpieza de SQLite mediante la función `clean_sqlite()`
+2. Limpieza de precios, eventos sanitarios y dólar mediante `limpieza_externas.py`
+3. Cálculo del FCR bruto y neto estimado mediante `metricas_fcr.py`
+4. Cálculo de costos y mortalidad basal mediante `costo_mortalidad.py`
+5. Generación de los cuatro gráficos del informe mediante `graficos_costos.py`, `graficos_fcr.py`, `graficos_mortalidad.py` y `graficos_basal.py`
 
-Las fuentes originales se abren en modo de solo lectura y se conservan intactas.
+Cada etapa utiliza las salidas de las anteriores. Si un script falla, la ejecución se detiene.
 
-## Ejecutar
+Las fuentes originales se conservan intactas.
 
-Se necesita Python 3.10 o superior. `main.py` y `metricas_fcr.py` no necesitan paquetes adicionales. `limpieza_externas.py` necesita `matplotlib` para los gráficos y acceso a internet para la API del dólar (si no hay internet, usa la respuesta guardada). `costo_mortalidad.py` necesita `pandas` y `openpyxl`. 
+## Requisitos e instalación
 
-Descomprimir este paquete en una carpeta nueva y abrir una terminal en la carpeta que contiene los scripts. En Windows:
+Se necesita Python 3.10 o superior. El proceso fue verificado con Python 3.12 y las versiones de dependencias indicadas en `requirements.txt`.
+
+Desde la carpeta que contiene `main.py`, instalar las dependencias una vez por entorno.
+
+En Windows:
+
+```powershell
+py -m pip install -r requirements.txt
+```
+
+En Linux o macOS:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+## Fuentes necesarias
+
+Los siguientes archivos deben estar dentro de `archivos/`:
+
+| Archivo | Contenido |
+| --- | --- |
+| `origen_acuicultura.sqlite` | Operación diaria y catálogos |
+| `origen_costos_alimento.csv` | Precios del alimento |
+| `origen_eventos_sanitarios.json` | Eventos sanitarios |
+
+El dólar se consulta en `https://mindicador.cl/api/dolar/2025`.
+
+Si la API no responde, se utiliza la respuesta cruda guardada en `output_persona2/dolar_2025_crudo.json`. Para reproducir el proceso sin conexión, conservar ese archivo. Los resultados calculados previamente no son necesarios.
+
+## Ejecutar el proceso completo
+
+Abrir una terminal en la carpeta que contiene `main.py`.
+
+En Windows:
 
 ```powershell
 py main.py
-py limpieza_externas.py
-py metricas_fcr.py
-py costo_mortalidad.py
 ```
 
 En Linux o macOS:
 
 ```bash
 python3 main.py
-python3 limpieza_externas.py
-python3 metricas_fcr.py
-python3 costo_mortalidad.py
 ```
 
-Los archivos originales deben estar en la carpeta `archivos/`:
+Este comando ejecuta la limpieza, los cálculos y los gráficos. No es necesario ejecutar los demás scripts por separado.
 
-| Archivo | Lo usa |
+## Resultados esperados
+
+| Carpeta | Contenido generado |
 | --- | --- |
-| `origen_acuicultura.sqlite` | `main.py` |
-| `origen_costos_alimento.csv` | `limpieza_externas.py` |
-| `origen_eventos_sanitarios.json` | `limpieza_externas.py` |
+| `output_persona1/` | Base SQLite limpia y registro de incidencias |
+| `output_persona2/` | Precios, eventos y dólar limpios, cobertura y gráficos complementarios |
+| `output_persona3/` | FCR bruto y neto estimado por centro y su comparación |
+| `output_costo/` | Excel con costos, mortalidad basal y valoraciones económicas |
+| `output_persona5/` | Cuatro gráficos del informe, sus datos e interpretaciones |
 
-Los criterios y supuestos están en `DECISIONES_SQLITE.md` y `DECISIONES_EXTERNAS.md`. Los valores utilizados en `main.py` están al principio del archivo.
+Con los archivos incluidos se esperan:
+
+- 13.157 filas de operación conservadas y 42 cosechas válidas
+- 33 precios válidos y cuatro eventos sanitarios válidos
+- 248 observaciones del dólar al utilizar la respuesta guardada
+- FCR bruto y neto estimado para siete centros
+
+Al finalizar aparece:
+
+```text
+OK cadena completa, resultados y gráficos generados
+```
+
+Las pruebas del proceso completo tardaron aproximadamente entre 11 y 31 segundos, con las dependencias instaladas y utilizando la respuesta guardada del dólar. La duración depende del equipo y de la disponibilidad de la API. No incluye la instalación de dependencias.
+
+Los criterios y supuestos se documentan en `DECISIONES_SQLITE.md`, `DECISIONES_EXTERNAS.md` y `FICHA_FCR.md`.
 
 # Parte 1 — Limpieza de SQLite
 
-`main.py` lee `origen_acuicultura.sqlite`, aplica las decisiones de limpieza acordadas y guarda una base limpia. El script crea `output_persona1/datos_sqlite_limpios.sqlite`.
+La función `clean_sqlite()` de `main.py` lee `origen_acuicultura.sqlite`, aplica las decisiones de limpieza acordadas y genera `output_persona1/datos_sqlite_limpios.sqlite`. Es la primera etapa del proceso completo.
 
 Con la base incluida, la salida esperada es:
 
@@ -52,7 +100,7 @@ OK SQLite: 13,157 filas de operación conservadas; 42 cosechas válidas
 Archivo: <ruta del proyecto>/output_persona1/datos_sqlite_limpios.sqlite
 ```
 
-`13,157` significa 13.157 filas. La ejecución tarda aproximadamente uno a dos segundos en el entorno de verificación.
+`13,157` significa 13.157 filas. Este mensaje corresponde a la limpieza de SQLite; después continúan las demás etapas.
 
 ## Trabajo realizado
 
@@ -156,7 +204,7 @@ No se excluyen filas adicionales en este cálculo. Se verificó que los resultad
 - Mortalidad basal por lote = muertes ÷ población en días sin evento. Exceso = muertes observadas en días de evento − tasa basal × población.
 - Impacto en pesos = alimento extra por FCR peor + alimento invertido en peces muertos por el evento, al precio medio pagado.
 
-Genera `output_costo/costo_mortalidad.xlsx`. La salida esperada termina con:
+Genera `output_costo/costo_mortalidad.xlsx`. Durante esta etapa aparece:
 
 ```text
 OK costo y mortalidad. Centro top: 7
@@ -164,16 +212,14 @@ OK costo y mortalidad. Centro top: 7
 
 # Parte 5 — Gráficos e interpretación
 
-Después de generar las salidas de las partes anteriores, instalar las dependencias y ejecutar:
+`main.py` ejecuta automáticamente los cuatro scripts de gráficos después de generar los resultados de limpieza, FCR, costos y mortalidad:
 
-```bash
-python -m pip install matplotlib pandas openpyxl
-python costo_mortalidad.py
-python graficos_costos.py
-python graficos_fcr.py
-python graficos_mortalidad.py --evento EV-8001
-python graficos_basal.py --evento EV-8001
-```
+- `graficos_costos.py`
+- `graficos_fcr.py`
+- `graficos_mortalidad.py`
+- `graficos_basal.py`
+
+Los gráficos de mortalidad y basal utilizan el evento EV-8001, que es la selección predeterminada de esos scripts.
 
 Los cuatro scripts de gráficos generan imágenes PNG, los datos utilizados en CSV y su interpretación en Markdown dentro de `output_persona5/`.
 

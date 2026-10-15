@@ -3,6 +3,8 @@ import datetime as datetime_lib
 import math
 import re
 import sqlite3
+import subprocess
+import sys
 from contextlib import closing
 from pathlib import Path
 
@@ -229,7 +231,7 @@ def save_sqlite(datos_sqlite_limpios_path, datasets):
     # cerramos la conexión antes de sustituir la salida anterior para evitar bloqueos en windows
     temporary_path.replace(datos_sqlite_limpios_path)
 
-def main():
+def clean_sqlite():
     """lee sqlite aplica la limpieza acordada y guarda la base limpia"""
     project_folder = Path(__file__).resolve().parent
     origen_acuicultura_path = project_folder / 'archivos' / 'origen_acuicultura.sqlite'
@@ -248,6 +250,35 @@ def main():
     save_sqlite(datos_sqlite_limpios_path, datasets)
     print(f'OK SQLite: {len(operation):,} filas de operación conservadas; {len(harvests)} cosechas válidas')
     print(f'Archivo: {datos_sqlite_limpios_path}')
+
+def main():
+    """ejecuta la limpieza de sqlite y los demás cálculos y gráficos de la entrega"""
+    clean_sqlite()
+
+    project_folder = Path(__file__).resolve().parent
+
+    script_names = (
+        'limpieza_externas.py',
+        'metricas_fcr.py',
+        'costo_mortalidad.py',
+        'graficos_costos.py',
+        'graficos_fcr.py',
+        'graficos_mortalidad.py',
+        'graficos_basal.py',
+    )
+
+    # ejecutamos cada archivo con el mismo intérprete y detenemos el proceso si falla algún paso
+    for script_name in script_names:
+        print(f'Ejecutando {script_name}', flush=True)
+
+        subprocess.run(
+            [sys.executable, str(project_folder / script_name)],
+            cwd=project_folder,
+            check=True,
+        )
+
+    print('OK cadena completa, resultados y gráficos generados')
+
 
 if __name__ == '__main__':
     main()
