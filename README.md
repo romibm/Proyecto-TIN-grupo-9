@@ -230,6 +230,5 @@ Los gráficos de costos y basal utilizan `output_costo/costo_mortalidad.xlsx`, g
 
 # Uso de IA
 
-Se utilizó IA para ayudar con partes del código y la documentación:
-
-- Claude: Para identificar fallas generales de los códigos
+- Claude: Apoyo en partes del código e identificar fallas generales.
+- ChatGPT: Documentación de código en README y apoyo en partes código.
