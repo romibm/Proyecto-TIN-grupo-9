@@ -1,3 +1,4 @@
+import argparse
 import collections
 import csv
 import datetime as dt
@@ -56,6 +57,7 @@ def parse_fecha(valor):
 def escribir(nombre, filas):
     SALIDA.mkdir(exist_ok=True)
     if not filas:
+        (SALIDA / nombre).unlink(missing_ok=True)
         return
     with (SALIDA / nombre).open("w", encoding="utf-8-sig", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(filas[0]))
@@ -147,36 +149,66 @@ def limpiar_eventos():
                             "filas_operacion_jaulas_afectadas": filas_jaulas})
     return limpios, incidencias, len(eventos)
 
-def limpiar_dolar():
-    """devuelve (filas, incidencias, total_leidos, estado); usa caché si la API no responde"""
-    cache = SALIDA / f"dolar_{YEAR}_crudo.json"
-    try:
-        with urllib.request.urlopen(API_DOLAR, timeout=15) as r:
-            crudo = json.loads(r.read().decode("utf-8"))
-        SALIDA.mkdir(exist_ok=True)
-        cache.write_text(json.dumps(crudo, ensure_ascii=False), encoding="utf-8")
-        estado = "API en línea"
-    except Exception as e:
-        if not cache.exists():
-            return [], [], 0, f"no disponible ({type(e).__name__}); sin caché"
-        crudo = json.loads(cache.read_text(encoding="utf-8"))
-        estado = "caché de una ejecución anterior"
-    serie = crudo.get("serie", [])
-    por_fecha, incidencias = {}, []
-    for i, p in enumerate(serie):
+def validate_dollar_payload(payload):
+    """valida la identidad y estructura de la captura antes de utilizarla"""
+    if not isinstance(payload, dict) or payload.get('codigo') != 'dolar' or payload.get('unidad_medida') != 'Pesos':
+        raise ValueError('Respuesta sin identidad de dólar en pesos')
+    series = payload.get('serie')
+    if not isinstance(series, list) or not series or not all(isinstance(row, dict) for row in series):
+        raise ValueError('Serie del dólar vacía o inválida')
+    return series
+
+
+def clean_dollar_payload(payload):
+    """conserva las exclusiones existentes para las observaciones del dólar"""
+    series = validate_dollar_payload(payload)
+    by_date, issues = {}, []
+    for index, observation in enumerate(series):
         try:
-            f = parse_fecha(p["fecha"])
-            v = parse_numero(p["valor"])
-            if f.year != YEAR or v <= 0:
+            date = parse_fecha(observation["fecha"])
+            value = parse_numero(observation["valor"])
+            if date.year != YEAR or value <= 0:
                 raise ValueError("fuera de 2025 o valor no positivo")
-            if f in por_fecha:
+            if date in by_date:
                 raise ValueError("fecha repetida")
-        except (ValueError, KeyError, TypeError) as e:
-            incidencias.append({"registro_api": i, "motivo": "registro_invalido", "accion": "excluido", "detalle": str(e)})
+        except (ValueError, KeyError, TypeError) as error:
+            issues.append({"registro_api": index, "motivo": "registro_invalido", "accion": "excluido", "detalle": str(error)})
             continue
-        por_fecha[f] = v
-    filas = [{"fecha": f.isoformat(), "clp_por_usd": v} for f, v in sorted(por_fecha.items())]
-    return filas, incidencias, len(serie), estado
+        by_date[date] = value
+    rows = [{"fecha": date.isoformat(), "clp_por_usd": value} for date, value in sorted(by_date.items())]
+    return rows, issues, len(series)
+
+
+def limpiar_dolar(update_dollar=False):
+    """usa la captura cruda y solo consulta la api cuando se solicita actualizar"""
+    dolar_crudo_path = CARPETA / 'archivos' / f'dolar_{YEAR}_crudo.json'
+    errors = []
+    if update_dollar:
+        try:
+            with urllib.request.urlopen(API_DOLAR, timeout=15) as response:
+                payload = json.loads(response.read().decode('utf-8'))
+            rows, issues, count = clean_dollar_payload(payload)
+            # una actualización debe ser íntegra para sustituir una captura válida
+            if issues or not rows:
+                raise ValueError('La nueva serie contiene registros inválidos')
+            dolar_temporal_path = dolar_crudo_path.with_suffix('.tmp.json')
+            try:
+                dolar_temporal_path.write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')
+                dolar_temporal_path.replace(dolar_crudo_path)
+            finally:
+                dolar_temporal_path.unlink(missing_ok=True)
+            return rows, issues, count, 'API validada; captura actualizada'
+        except (OSError, ValueError, TypeError) as error:
+            errors.append(f'API fallida ({type(error).__name__}: {error})')
+    try:
+        payload = json.loads(dolar_crudo_path.read_text(encoding='utf-8'))
+        rows, issues, count = clean_dollar_payload(payload)
+        if not rows:
+            return rows, issues, count, 'no disponible; captura sin observaciones válidas; ' + '; '.join(errors)
+        return rows, issues, count, '; '.join(['captura archivos/dolar_2025_crudo.json', *errors])
+    except (OSError, ValueError, TypeError) as error:
+        errors.append(f'captura inválida o ausente ({type(error).__name__}: {error})')
+        return [], [], 0, 'no disponible; ' + '; '.join(errors)
 
 def graficos(precios, eventos, dolar, cobertura):
     import matplotlib
@@ -262,11 +294,17 @@ def graficos(precios, eventos, dolar, cobertura):
             ax.set_title("Precio promedio del alimento en USD, 2025 (USD/kg, promedio de los tres tipos)", loc="left", fontsize=12)
             guardar(fig, "5_precio_alimento_usd.png")
 
-def main():
+def main(update_dollar=False):
     SALIDA.mkdir(exist_ok=True)
     precios, inc_p, n_precios, huecos = limpiar_precios()
     eventos, inc_e, n_eventos = limpiar_eventos()
-    dolar, inc_d, n_dolar, estado_dolar = limpiar_dolar()
+    dolar, inc_d, n_dolar, estado_dolar = limpiar_dolar(update_dollar)
+    if not precios or not eventos:
+        raise ValueError('Precios o eventos sin registros válidos: costos, basal y gráficos afectados')
+    # retiramos resultados opcionales anteriores que no representan esta ejecución
+    if not dolar:
+        for file_name in ('4_dolar_mensual.png', '5_precio_alimento_usd.png'):
+            (GRAFICOS / file_name).unlink(missing_ok=True)
     escribir("precios_limpios.csv", precios)
     escribir("eventos_limpios.csv", eventos)
     escribir("dolar_limpio.csv", dolar)
@@ -290,11 +328,10 @@ def main():
     lineas.append(f"Dólar: {estado_dolar}")
     (SALIDA / "cobertura.txt").write_text("\n".join(lineas) + "\n", encoding="utf-8")
     print("\n".join(lineas))
-    try:
-        graficos(precios, eventos, dolar, cobertura)
-        print(f"Gráficos en {GRAFICOS}")
-    except ImportError:
-        print("Falta matplotlib: pip install matplotlib (los CSV ya se generaron)")
+    graficos(precios, eventos, dolar, cobertura)
+    print(f"Gráficos en {GRAFICOS}")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--actualizar-dolar', action='store_true')
+    main(parser.parse_args().actualizar_dolar)

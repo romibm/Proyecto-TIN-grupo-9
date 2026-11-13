@@ -8,13 +8,13 @@
 4. Cálculo de costos y mortalidad basal mediante `costo_mortalidad.py`
 5. Generación de los cuatro gráficos del informe mediante `graficos_costos.py`, `graficos_fcr.py`, `graficos_mortalidad.py` y `graficos_basal.py`
 
-Cada etapa utiliza las salidas de las anteriores. Si un script falla, la ejecución se detiene.
+Cada etapa utiliza las salidas de las anteriores. Se realiza una recarga completa, sin acumular registros. Si una etapa o comprobación crítica falla, la ejecución se detiene con código distinto de cero y registra la falla en `output_calidad/ultima_ejecucion.json`.
 
 Las fuentes originales se conservan intactas.
 
 ## Requisitos e instalación
 
-Se necesita Python 3.10 o superior. El proceso fue verificado con Python 3.12 y las versiones de dependencias indicadas en `requirements.txt`.
+Se necesita Python 3.10 o superior. El proceso fue verificado con Python 3.12.10 y las versiones exactas de `requirements.txt`, ya instaladas, sin añadir dependencias.
 
 Desde la carpeta que contiene `main.py`, instalar las dependencias una vez por entorno.
 
@@ -39,10 +39,9 @@ Los siguientes archivos deben estar dentro de `archivos/`:
 | `origen_acuicultura.sqlite` | Operación diaria y catálogos |
 | `origen_costos_alimento.csv` | Precios del alimento |
 | `origen_eventos_sanitarios.json` | Eventos sanitarios |
+| `dolar_2025_crudo.json` | Captura cruda del dólar de 2025, opcional para los cálculos en USD |
 
-El dólar se consulta en `https://mindicador.cl/api/dolar/2025`.
-
-Si la API no responde, se utiliza la respuesta cruda guardada en `output_persona2/dolar_2025_crudo.json`. Para reproducir el proceso sin conexión, conservar ese archivo. Los resultados calculados previamente no son necesarios.
+Por defecto se utiliza `archivos/dolar_2025_crudo.json`, trasladada desde `output_persona2/` para separarla de las salidas regenerables. La ejecución normal no consulta la red. Conservar esta captura permite repetir las cifras; no se usan resultados calculados anteriormente como fuente.
 
 ## Ejecutar el proceso completo
 
@@ -62,6 +61,16 @@ python3 main.py
 
 Este comando ejecuta la limpieza, los cálculos y los gráficos. No es necesario ejecutar los demás scripts por separado.
 
+Para solicitar una actualización del dólar desde `https://mindicador.cl/api/dolar/2025`:
+
+```powershell
+py main.py --actualizar-dolar
+```
+
+En Linux/macOS: `python3 main.py --actualizar-dolar`. Se aplica timeout de 15 segundos y se valida toda la respuesta antes de reemplazar la captura. Si la API falla o la respuesta es inválida, se conserva y utiliza la captura válida existente. El informe registra la procedencia y la advertencia.
+
+SQLite, precios y eventos son esenciales: si faltan o invalidan los cálculos, se bloquea la cadena. El dólar es opcional: si tampoco hay captura válida, se advierte y se omiten su CSV y los dos gráficos de dólar/precios en USD, retirando esas salidas antiguas. Las exclusiones de limpieza, los huecos tipo-mes y los netos mensuales no definidos previstos por la fórmula se registran como advertencias; no se cambian las reglas ni se imputan datos. Los demás errores bloquean. Una falla puede dejar archivos parciales; revisar siempre el estado del informe antes de consumir resultados.
+
 ## Resultados esperados
 
 | Carpeta | Contenido generado |
@@ -71,6 +80,7 @@ Este comando ejecuta la limpieza, los cálculos y los gráficos. No es necesario
 | `output_persona3/` | FCR bruto y neto estimado por centro y su comparación |
 | `output_costo/` | Excel con costos, mortalidad basal y valoraciones económicas |
 | `output_persona5/` | Cuatro gráficos del informe, sus datos e interpretaciones |
+| `output_calidad/` | `ultima_ejecucion.json`: fecha UTC, estado, fuentes, conteos, comprobaciones y fallas; `verificacion_e2.json`: evidencia de las pruebas controladas |
 
 Con los archivos incluidos se esperan:
 
@@ -85,7 +95,13 @@ Al finalizar aparece:
 OK cadena completa, resultados y gráficos generados
 ```
 
-Las pruebas del proceso completo tardaron aproximadamente entre 11 y 31 segundos, con las dependencias instaladas y utilizando la respuesta guardada del dólar. La duración depende del equipo y de la disponibilidad de la API. No incluye la instalación de dependencias.
+Con las entradas incluidas, el estado esperado es `ok_con_advertencias`: existen exclusiones acordadas, tres combinaciones tipo-mes sin precio y un neto mensual no definido. El mensaje de éxito solo aparece después de completar las etapas y comprobar las salidas necesarias.
+
+La última recarga verificada en copia temporal tardó aproximadamente 8 segundos, sin red y con las dependencias instaladas. La duración depende del equipo; no incluye instalación.
+
+También se comprobó una instalación de `requirements.txt` en un entorno virtual nuevo y una ejecución de `main.py` en otra copia sin salidas previas, con código 0. La evidencia adicional está en `verificacion_e2.json`, apartado `instalacion_limpia`. Un informe heredado de la implementación anterior marcado como temporal no acredita ejecución local; se conserva intacto hasta ejecutar `main.py` localmente.
+
+Para repetir las pruebas de P1: `py verificar_e2.py` (o `python3 verificar_e2.py`). Usa una copia temporal sin outputs previos, comprueba repetibilidad entre ejecuciones nuevas y ausencia de duplicados; no compara con una referencia anterior de E1. Simula fallas de fuente/API sin modificar la captura original. El modo normal y la etapa omitida prohíben consultas a la API; solo los escenarios de actualización solicitan esa opción y simulan la respuesta o el error. Guarda el informe temporal y los escenarios exclusivamente en `output_calidad/verificacion_e2.json`, con su procedencia. No crea ni reemplaza `ultima_ejecucion.json`, reservado a `main.py` sobre el proyecto local. No reinstala dependencias. Arquitectura, diagrama, linaje y objetivos de servicio propuestos: [ARQUITECTURA_E2.md](ARQUITECTURA_E2.md).
 
 Los criterios y supuestos se documentan en `DECISIONES_SQLITE.md`, `DECISIONES_EXTERNAS.md` y `FICHA_FCR.md`.
 
@@ -128,7 +144,7 @@ Se verificó que las filas conservadas coincidan con las decisiones acordadas y 
 
 # Parte 2 — Precios, eventos sanitarios y dólar
 
-`limpieza_externas.py` lee el CSV de precios, el JSON de eventos y la API del dólar. Crea la carpeta `output_persona2/`. Si falta la base de la parte 1, el script se detiene porque necesita validar los eventos contra sus centros, jaulas y operación diaria.
+`limpieza_externas.py` lee el CSV de precios, el JSON de eventos y la captura cruda del dólar (API solo con actualización explícita). Crea la carpeta `output_persona2/`. Si falta la base de la parte 1, el script se detiene porque necesita validar los eventos contra sus centros, jaulas y operación diaria.
 
 ## Trabajo realizado
 
@@ -136,7 +152,7 @@ Se verificó que las filas conservadas coincidan con las decisiones acordadas y 
 
 **Eventos sanitarios (JSON).** Se validan el centro, las fechas, la mortalidad declarada y las jaulas afectadas contra la base limpia. Se excluyen los eventos de centros que no existen. La fecha `15/10/2025` de EV-8001 se corrige a formato ISO. Para cada evento válido se compara la mortalidad declarada en el JSON con la observada en la operación diaria, en las jaulas afectadas y en todo el centro.
 
-**Dólar (API).** Se consulta `https://mindicador.cl/api/dolar/2025`, se guarda la respuesta cruda para poder repetir la ejecución y se excluyen los registros inválidos. Si la API no responde se usa la respuesta guardada; si tampoco existe, la fuente queda sin datos y el script lo informa.
+**Dólar (captura/API).** Se lee por defecto `archivos/dolar_2025_crudo.json` y se aplican las exclusiones existentes. La actualización explícita consulta la API, valida la respuesta completa y sustituye la captura solo si es válida; ante falla utiliza el respaldo. Sin captura utilizable se informa qué productos opcionales quedan omitidos.
 
 ## Resultados
 
@@ -144,10 +160,11 @@ Se verificó que las filas conservadas coincidan con las decisiones acordadas y 
 | --- | --- |
 | `precios_limpios.csv` | Un precio por tipo de alimento y mes, con el nombre original y la fila del CSV |
 | `eventos_limpios.csv` | Eventos válidos con mortalidad declarada y observada |
-| `dolar_limpio.csv` | Dólar diario de 2025 (solo si la API o la respuesta guardada estuvo disponible) |
+| `dolar_limpio.csv` | Dólar diario de 2025 (solo con captura o API utilizables) |
 | `incidencias_precios.csv`, `incidencias_eventos.csv`, `incidencias_dolar.csv` | Fila u origen, motivo, acción (excluido, corregido o descartado) y detalle |
-| `dolar_2025_crudo.json` | Respuesta de la API guardada |
 | `cobertura.txt` | Registros excluidos por fuente y en total |
+
+La captura cruda se conserva en `archivos/dolar_2025_crudo.json`, fuera de esta tabla de salidas regenerables.
 
 ## Cobertura de datos
 
@@ -157,7 +174,7 @@ Un registro queda fuera cuando se lee de la fuente y una regla de calidad lo exc
 | --- | --- | --- | --- | --- |
 | Precios (CSV) | 34 | 1 | 2,9 % | Un precio `sin dato` |
 | Eventos (JSON) | 8 | 4 | 50,0 % | Cuatro eventos de centros que no existen (90 a 93) |
-| Dólar (API) | 248 | 0 | 0 % | La ejecución de verificación tuvo acceso a la API |
+| Dólar (captura) | 248 | 0 | 0 % | Respuesta cruda conservada, sin acceso a la red |
 | **Total** | **290** | **5** | **1,7 %** | |
 
 Además, hay precio válido en 33 de las 36 combinaciones de tipo de alimento y mes (91,7 %). Faltan Engorda 100 en mayo, Engorda 200 en julio y Pigmentado en febrero. Los dos últimos meses ni siquiera aparecen como fila en el CSV.
