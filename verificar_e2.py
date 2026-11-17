@@ -60,8 +60,13 @@ sys.argv = ['main.py'] + (['--actualizar-dolar'] if simulate_api else [])
 runpy.run_path('main.py', run_name='__main__')
 """
     command = [sys.executable, '-c', code]
-    return subprocess.run(command, cwd=project_folder, capture_output=True, text=True,
-                          encoding='utf-8', env={**os.environ, 'PYTHONIOENCODING': 'utf-8'})
+    result = subprocess.run(command, cwd=project_folder, capture_output=True, text=True,
+                            encoding='utf-8', env={**os.environ, 'PYTHONIOENCODING': 'utf-8'})
+    for file_name in ('1_precio_alimento_mensual.png', '2_cobertura_por_fuente.png',
+                      '3_mortalidad_declarada_vs_observada.png', '4_dolar_mensual.png',
+                      '5_precio_alimento_usd.png'):
+        assert not (project_folder / 'output_persona2' / 'graficos' / file_name).exists(), file_name
+    return result
 
 
 def write_evidence(project_folder, evidence):
@@ -131,12 +136,11 @@ with patch('urllib.request.urlopen', return_value=response) as request:
         skipped_report = json.loads(ultima_ejecucion_path.read_text(encoding='utf-8'))
         assert any(row['nombre'] == 'salidas_requeridas' and row['resultado'] == 'no_cumple'
                    for row in skipped_report['comprobaciones'])
-        # sin dólar se advierte y se retiran los productos opcionales antiguos
+        # sin dólar se advierte y se retira el CSV opcional antiguo
         dolar_crudo_path.unlink()
         no_dollar = run_chain(copy_folder)
         assert no_dollar.returncode == 0, no_dollar.stderr
         assert not (copy_folder / 'output_persona2' / 'dolar_limpio.csv').exists()
-        assert not (copy_folder / 'output_persona2' / 'graficos' / '4_dolar_mensual.png').exists()
         no_dollar_report = json.loads(ultima_ejecucion_path.read_text(encoding='utf-8'))
         assert no_dollar_report['estado'] == 'ok_con_advertencias'
         shutil.copy2(project_folder / 'archivos' / 'dolar_2025_crudo.json', dolar_crudo_path)
@@ -156,7 +160,8 @@ with patch('urllib.request.urlopen', return_value=response) as request:
                                'API fallida con respaldo y mismas cifras', 'actualización inválida rechazada',
                                'fuente esencial ausente bloquea con resultados anteriores presentes',
                                'etapa sin productos bloquea aun con retorno cero',
-                               'dólar ausente advierte y retira salidas opcionales antiguas'],
+                               'dólar ausente advierte y retira su CSV antiguo',
+                               'cinco PNG complementarios retirados ausentes en todas las ejecuciones'],
                     'conteos': baseline_report['conteos'], 'resultado': 'cumple',
                     'escenarios': {'api_fallida': {'estado': failed_api_report['estado'],
                         'fuente_dolar': failed_api_report['fuentes']['dolar']['utilizada']},

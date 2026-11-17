@@ -40,9 +40,6 @@
         <mxCell id="X9RN2rF-pGVuU876FZ__-13" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#f0f5f9;strokeColor=#42647a;fontColor=#17364a;fontFamily=Arial;fontSize=16;spacing=10;" value="Consumo actual&#xa;&#xa;graficos_costos.py · graficos_fcr.py&#xa;graficos_mortalidad.py&#xa;graficos_basal.py&#xa;output_persona5/ · PNG, CSV, MD&#xa;Informe de resultados" vertex="1">
           <mxGeometry height="180" width="280" x="520" y="-1880" as="geometry" />
         </mxCell>
-        <mxCell id="X9RN2rF-pGVuU876FZ__-14" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#f0f5f9;strokeColor=#42647a;fontColor=#17364a;fontFamily=Arial;fontSize=16;spacing=10;" value="Gráficos complementarios&#xa;&#xa;limpieza_externas.py&#xa;output_persona2/graficos/&#xa;Dólar y alimento en USD opcionales" vertex="1">
-          <mxGeometry height="140" width="280" x="520" y="-1590" as="geometry" />
-        </mxCell>
         <mxCell id="X9RN2rF-pGVuU876FZ__-17" edge="1" parent="1" source="X9RN2rF-pGVuU876FZ__-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;strokeColor=#42647a;fontSize=13;" target="X9RN2rF-pGVuU876FZ__-8" value="">
           <mxGeometry relative="1" as="geometry">
             <Array as="points" />
@@ -101,14 +98,6 @@
               <mxPoint x="155" y="-1695" />
               <mxPoint x="505" y="-1695" />
               <mxPoint x="505" y="-1710" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="X9RN2rF-pGVuU876FZ__-27" edge="1" parent="1" source="X9RN2rF-pGVuU876FZ__-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=0;endArrow=block;strokeColor=#42647a;fontSize=13;" target="X9RN2rF-pGVuU876FZ__-14" value="">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint y="-1425" />
-              <mxPoint x="660" y="-1425" />
             </Array>
           </mxGeometry>
         </mxCell>

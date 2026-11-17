@@ -5,7 +5,7 @@ No se incorpora un modelo nuevo ni se implementa el prototipo.
 
 ## Capas y diagrama
 
-Diagrama [editable en diagrams.net](docs/arquitectura.drawio) y [exportación SVG](docs/arquitectura.svg).
+Diagrama [editable en diagrams.net](docs/arquitectura.drawio) y [exportación SVG](docs/arquitectura.drawio.svg).
 
 | Capa | Elementos reales y propósito |
 | --- | --- |
@@ -13,7 +13,7 @@ Diagrama [editable en diagrams.net](docs/arquitectura.drawio) y [exportación SV
 | Cruda | `archivos/origen_acuicultura.sqlite`, `origen_costos_alimento.csv`, `origen_eventos_sanitarios.json`, `dolar_2025_crudo.json`; entradas conservadas, separadas de resultados regenerables |
 | Depurada | `clean_sqlite()` en `main.py` produce `output_persona1/datos_sqlite_limpios.sqlite`; `limpieza_externas.py` produce CSV, incidencias y cobertura en `output_persona2/` |
 | Modelo analítico existente | `metricas_fcr.py` agrupa por centro en `output_persona3/fcr_por_centro.csv`; `costo_mortalidad.py` calcula las hojas del Excel `output_costo/costo_mortalidad.xlsx`. Esta capa describe esos cálculos, sin agregar tablas |
-| Consumo | Cuatro scripts `graficos_*.py`: PNG, CSV y Markdown en `output_persona5/`; gráficos complementarios en `output_persona2/graficos/`; informe. Prototipo únicamente como consumo previsto |
+| Consumo | Cuatro scripts `graficos_*.py`: PNG, CSV y Markdown en `output_persona5/`; informe. Prototipo únicamente como consumo previsto |
 
 `main.py` coordina las etapas mediante el mismo intérprete y directorio del proyecto.
 `calidad.py` comprueba las entradas, las filas depuradas, los denominadores y los
@@ -37,7 +37,7 @@ productos requeridos. Su JSON es evidencia de P1, sin contrato para el prototipo
 3. **Fallas según dependencia real.** SQLite, precios y eventos son esenciales:
    ausencia, estructura ilegible o datos depurados que invalidan los cálculos
    bloquean la ejecución con código 1. El dólar es opcional: su ausencia advierte
-   y omite el dólar mensual y los precios en USD; no afecta el FCR ni los costos
+   y omite el CSV depurado del dólar; no afecta el FCR ni los costos
    en CLP. La API se consulta solo con `--actualizar-dolar`, con timeout de 15 s.
    Se valida identidad, estructura, fechas únicas de 2025 y valores positivos de
    toda la respuesta nueva antes de sustituir la captura mediante un temporal.
@@ -75,7 +75,7 @@ se presentan como ejecutadas. Las excepciones también quedan registradas.
 | Población fuera de eventos por lote; alimento, población y crecimiento en grupos usados por los indicadores; pares consecutivos para la verificación existente | Bloquea | `denominador_basal`, `denominadores_indicadores`, `denominador_verificacion_crecimiento` |
 | Crecimiento neto positivo por centro, exigido por el FCR actual | Bloquea | `denominador_fcr_neto_centros` |
 | Neto no positivo en resúmenes de costos que ya contemplan resultado vacío | Advierte; conserva el vacío definido en el script | `netos_no_definidos_costo` |
-| Archivos necesarios de todas las etapas, incluidos gráficos complementarios según disponibilidad del dólar | Bloquea si faltan o están vacíos | `salidas_requeridas`, `etapas` |
+| Archivos necesarios de todas las etapas, incluidos los cuatro gráficos de `output_persona5/` y el CSV del dólar cuando está disponible | Bloquea si faltan o están vacíos | `salidas_requeridas`, `etapas` |
 
 ## Linaje de campos de las métricas actuales
 
@@ -91,7 +91,7 @@ y `FICHA_FCR.md`. No se redefinen fórmulas ni se anticipan reglas de P2.
 | CSV `tipo_alimento`, `mes`, `precio_clp_kg`, `moneda` | Normalización de tipos, lectura numérica, CLP positivo, exclusiones y unicidad tipo-mes; conserva `tipo_original`, `fila_csv`; media de tipos observados por mes | `precios_limpios.csv`; Excel `precio_mes`, costo `Σ(alimento × precio_mes) / Σ crecimiento`; precio medio pagado `Σ costo / Σ alimento` |
 | JSON `evento_id`, `centro_id`, `fecha_inicio`, `fecha_fin`, `jaulas_afectadas`, `mortalidad_asociada` | Fechas ISO y validación; suma de mortalidad de operación en intervalo/jaulas; marca `evento_id` con el orden actual de eventos | `eventos_limpios.csv`: mortalidad declarada y observada; Excel `eventos`; selección de días sin evento por lote para la basal |
 | Operación depurada y marca de evento | Basal existente `Σ muertes / Σ población` fuera de eventos por lote; esperadas = basal × población en evento; exceso = observadas − esperadas | Excel `eventos`, `por_centro`, hojas mensuales e `impacto`; gráficos de mortalidad y basal. El exceso no demuestra causalidad |
-| Captura dólar `serie[].fecha`, `serie[].valor` | Fecha ISO, positivo, período, duplicados; promedio mensual de observaciones disponibles y conversión de precio CLP a USD | `dolar_limpio.csv`, gráficos complementarios de dólar y alimento en USD; no participa en costos CLP ni FCR |
+| Captura dólar `serie[].fecha`, `serie[].valor` | Fecha ISO, valor positivo, período y exclusión de duplicados | `dolar_limpio.csv`; no participa en costos CLP ni FCR |
 
 Los resultados del Excel incluyen las valoraciones económicas ya implementadas;
 esta intervención solo protege sus entradas y denominadores. Los datos de
@@ -129,7 +129,8 @@ No compara bytes de Excel ni imágenes y no modifica las fuentes originales.
 Se verificaron también API fallida sin red con respaldo y mismas cifras,
 actualización con valor inválido rechazada sin sustituir la captura, timeout
 configurado, precios ausentes bloqueando aun con outputs anteriores presentes,
-y dólar ausente con advertencia y retirada de sus productos antiguos. Una etapa
+y dólar ausente con advertencia y retirada de su CSV antiguo. Los cinco PNG
+complementarios retirados permanecen ausentes en ambos modos. Una etapa
 que retorna cero sin generar sus archivos también bloqueó el éxito de la cadena.
 Finalmente se restauraron las entradas de la copia y se ejecutó otra recarga
 válida con los mismos datos que la primera. Esto demuestra repetibilidad entre

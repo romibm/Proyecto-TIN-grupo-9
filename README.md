@@ -69,14 +69,14 @@ py main.py --actualizar-dolar
 
 En Linux/macOS: `python3 main.py --actualizar-dolar`. Se aplica timeout de 15 segundos y se valida toda la respuesta antes de reemplazar la captura. Si la API falla o la respuesta es inválida, se conserva y utiliza la captura válida existente. El informe registra la procedencia y la advertencia.
 
-SQLite, precios y eventos son esenciales: si faltan o invalidan los cálculos, se bloquea la cadena. El dólar es opcional: si tampoco hay captura válida, se advierte y se omiten su CSV y los dos gráficos de dólar/precios en USD, retirando esas salidas antiguas. Las exclusiones de limpieza, los huecos tipo-mes y los netos mensuales no definidos previstos por la fórmula se registran como advertencias; no se cambian las reglas ni se imputan datos. Los demás errores bloquean. Una falla puede dejar archivos parciales; revisar siempre el estado del informe antes de consumir resultados.
+SQLite, precios y eventos son esenciales: si faltan o invalidan los cálculos, se bloquea la cadena. El dólar es opcional: si tampoco hay captura válida, se advierte y se omite su CSV, retirando esa salida antigua. Las exclusiones de limpieza, los huecos tipo-mes y los netos mensuales no definidos previstos por la fórmula se registran como advertencias; no se cambian las reglas ni se imputan datos. Los demás errores bloquean. Una falla puede dejar archivos parciales; revisar siempre el estado del informe antes de consumir resultados.
 
 ## Resultados esperados
 
 | Carpeta | Contenido generado |
 | --- | --- |
 | `output_persona1/` | Base SQLite limpia y registro de incidencias |
-| `output_persona2/` | Precios, eventos y dólar limpios, cobertura y gráficos complementarios |
+| `output_persona2/` | Precios, eventos y dólar limpios, incidencias y cobertura |
 | `output_persona3/` | FCR bruto y neto estimado por centro y su comparación |
 | `output_costo/` | Excel con costos, mortalidad basal y valoraciones económicas |
 | `output_persona5/` | Cuatro gráficos del informe, sus datos e interpretaciones |
@@ -247,6 +247,5 @@ Los gráficos de costos y basal utilizan `output_costo/costo_mortalidad.xlsx`, g
 
 # Uso de IA
 
-Se utilizó IA para ayudar con partes del código y la documentación:
-
-- Claude: Para identificar fallas generales de los códigos
+- Claude: Apoyo en partes del código e identificar fallas generales.
+- ChatGPT: Documentación de código en README y apoyo en partes código.

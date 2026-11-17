@@ -186,7 +186,7 @@ class QualityReport:
         self.source('dolar', dolar_crudo_path)
         self.data['fuentes']['dolar']['utilizada'] = status
         self.check('disponibilidad_dolar', bool(dollars),
-                   status + '; afecta dólar mensual y precio del alimento en USD', 'advertencia')
+                   status + '; afecta el CSV depurado del dólar', 'advertencia')
         self.check('actualizacion_api', 'API fallida' not in status, status, 'advertencia')
         if dollars:
             self.check('dolar_valido', all(dt.date.fromisoformat(row['fecha']).year == 2025 and
@@ -262,11 +262,8 @@ class QualityReport:
         for stem in ('01_interpretacion_costos', '02_interpretacion_fcr',
                      '03_interpretacion_mortalidad_EV-8001', '04_interpretacion_basal_EV-8001'):
             required.append('output_persona5/' + stem + '.md')
-        for file_name in ('1_precio_alimento_mensual.png', '2_cobertura_por_fuente.png', '3_mortalidad_declarada_vs_observada.png'):
-            required.append('output_persona2/graficos/' + file_name)
         if dollar_available:
-            required += ['output_persona2/dolar_limpio.csv', 'output_persona2/graficos/4_dolar_mensual.png',
-                         'output_persona2/graficos/5_precio_alimento_usd.png']
+            required.append('output_persona2/dolar_limpio.csv')
         return required
 
     def prepare_outputs(self):
