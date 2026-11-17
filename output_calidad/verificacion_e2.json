@@ -1,0 +1,2245 @@
+{
+  "fecha": "2026-11-13T22:16:36.906028+00:00",
+  "dependencias": {
+    "matplotlib": "3.10.8",
+    "pandas": "2.2.3",
+    "openpyxl": "3.1.5"
+  },
+  "procedencia": "copia temporal sin outputs previos; dependencias del intérprete invocante",
+  "informe_temporal": {
+    "fecha": "2026-11-13T22:16:36.906028+00:00",
+    "estado": "ok_con_advertencias",
+    "fuentes": {
+      "sqlite": {
+        "ruta": "archivos/origen_acuicultura.sqlite",
+        "disponible": true,
+        "sha256": "6959bd2204e33477199917b1665f2841a52977573b115c6a752ade3b3fa037b3"
+      },
+      "precios": {
+        "ruta": "archivos/origen_costos_alimento.csv",
+        "disponible": true,
+        "sha256": "7c59a030ea2b622a74ac46ae51cac9e27a9dbd80a6e0ab7398cc75433204a924"
+      },
+      "eventos": {
+        "ruta": "archivos/origen_eventos_sanitarios.json",
+        "disponible": true,
+        "sha256": "28d4f0f4fccfd347804576ab1f9172b6e0815f5d1e9cf2bb7769fe15cf0fa68a"
+      },
+      "dolar": {
+        "ruta": "archivos/dolar_2025_crudo.json",
+        "disponible": true,
+        "sha256": "66b64fabbbdf31d0d5984aaf7dbb8795f7981ba55608d35384e26de4c65ef0cd",
+        "utilizada": "captura archivos/dolar_2025_crudo.json"
+      }
+    },
+    "conteos": {
+      "centros": {
+        "leidos": 7,
+        "conservados": 7,
+        "excluidos": 0
+      },
+      "zonas": {
+        "leidos": 3,
+        "conservados": 3,
+        "excluidos": 0
+      },
+      "jaulas": {
+        "leidos": 42,
+        "conservados": 42,
+        "excluidos": 0
+      },
+      "lotes": {
+        "leidos": 42,
+        "conservados": 42,
+        "excluidos": 0
+      },
+      "especies": {
+        "leidos": 3,
+        "conservados": 3,
+        "excluidos": 0
+      },
+      "operacion_diaria": {
+        "leidos": 14409,
+        "conservados": 13157,
+        "excluidos": 1252
+      },
+      "cosechas": {
+        "leidos": 48,
+        "conservados": 42,
+        "excluidos": 6
+      },
+      "incidencias_no_excluyentes_sqlite": {
+        "inferido": 1,
+        "advertencia": 377,
+        "corregido": 690
+      },
+      "precios": {
+        "leidos": 34,
+        "conservados": 33,
+        "excluidos": 1,
+        "no_registros": 2
+      },
+      "eventos": {
+        "leidos": 8,
+        "conservados": 4,
+        "excluidos": 4,
+        "no_registros": 0
+      },
+      "dolar": {
+        "leidos": 248,
+        "conservados": 248,
+        "excluidos": 0,
+        "no_registros": 0
+      },
+      "completitud_precios": {
+        "esperados": 36,
+        "observados": 33,
+        "porcentaje": 91.66666666666667
+      }
+    },
+    "comprobaciones": [
+      {
+        "nombre": "fuente_sqlite",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "origen_acuicultura.sqlite; si falta o es inválida afecta FCR, costos, basal y gráficos"
+      },
+      {
+        "nombre": "fuente_precios",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "origen_costos_alimento.csv; si falta o es inválida afecta costos y gráficos de costos y basal"
+      },
+      {
+        "nombre": "fuente_eventos",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "origen_eventos_sanitarios.json; si falta o es inválida afecta basal, exceso y gráficos sanitarios"
+      },
+      {
+        "nombre": "integridad_sqlite",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "integridad física de la fuente operativa"
+      },
+      {
+        "nombre": "estructura_precios",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "columnas necesarias para limpiar precios"
+      },
+      {
+        "nombre": "estructura_eventos",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "lista de eventos presente y no vacía"
+      },
+      {
+        "nombre": "exclusiones_centros",
+        "resultado": "cumple",
+        "severidad": "advertencia",
+        "detalle": "0 filas excluidas por reglas existentes"
+      },
+      {
+        "nombre": "conciliacion_centros",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "7 leídos = 7 conservados + 0 excluidos"
+      },
+      {
+        "nombre": "exclusiones_zonas",
+        "resultado": "cumple",
+        "severidad": "advertencia",
+        "detalle": "0 filas excluidas por reglas existentes"
+      },
+      {
+        "nombre": "conciliacion_zonas",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "3 leídos = 3 conservados + 0 excluidos"
+      },
+      {
+        "nombre": "exclusiones_jaulas",
+        "resultado": "cumple",
+        "severidad": "advertencia",
+        "detalle": "0 filas excluidas por reglas existentes"
+      },
+      {
+        "nombre": "conciliacion_jaulas",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "42 leídos = 42 conservados + 0 excluidos"
+      },
+      {
+        "nombre": "exclusiones_lotes",
+        "resultado": "cumple",
+        "severidad": "advertencia",
+        "detalle": "0 filas excluidas por reglas existentes"
+      },
+      {
+        "nombre": "conciliacion_lotes",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "42 leídos = 42 conservados + 0 excluidos"
+      },
+      {
+        "nombre": "exclusiones_especies",
+        "resultado": "cumple",
+        "severidad": "advertencia",
+        "detalle": "0 filas excluidas por reglas existentes"
+      },
+      {
+        "nombre": "conciliacion_especies",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "3 leídos = 3 conservados + 0 excluidos"
+      },
+      {
+        "nombre": "exclusiones_operacion_diaria",
+        "resultado": "no_cumple",
+        "severidad": "advertencia",
+        "detalle": "1252 filas excluidas por reglas existentes"
+      },
+      {
+        "nombre": "conciliacion_operacion_diaria",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "14409 leídos = 13157 conservados + 1252 excluidos"
+      },
+      {
+        "nombre": "exclusiones_cosechas",
+        "resultado": "no_cumple",
+        "severidad": "advertencia",
+        "detalle": "6 filas excluidas por reglas existentes"
+      },
+      {
+        "nombre": "conciliacion_cosechas",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "48 leídos = 42 conservados + 6 excluidos"
+      },
+      {
+        "nombre": "catalogos_unicos",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "identificadores únicos en los cinco catálogos"
+      },
+      {
+        "nombre": "referencias_catalogos",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "referencias de centros, jaulas, lotes y especies depuradas"
+      },
+      {
+        "nombre": "clave_operacion",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "unicidad fecha-centro-jaula-lote"
+      },
+      {
+        "nombre": "referencias_operacion",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "operación vinculada al centro, jaula, lote y especie correspondientes"
+      },
+      {
+        "nombre": "periodo_operacion",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "fechas de 2025 y mes coherente"
+      },
+      {
+        "nombre": "cantidades_operacion",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "cantidades finitas y límites existentes; población positiva protege el peso medio"
+      },
+      {
+        "nombre": "cosechas_validas",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "referencias, fechas y kilos de cosechas"
+      },
+      {
+        "nombre": "advertencias_limpieza_sqlite",
+        "resultado": "no_cumple",
+        "severidad": "advertencia",
+        "detalle": "377 advertencias conservadas según las decisiones existentes"
+      },
+      {
+        "nombre": "exclusiones_precios",
+        "resultado": "no_cumple",
+        "severidad": "advertencia",
+        "detalle": "1 excluidos por limpieza; no son errores en las salidas"
+      },
+      {
+        "nombre": "conciliacion_precios",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "34 leídos = 33 conservados + 1 excluidos"
+      },
+      {
+        "nombre": "exclusiones_eventos",
+        "resultado": "no_cumple",
+        "severidad": "advertencia",
+        "detalle": "4 excluidos por limpieza; no son errores en las salidas"
+      },
+      {
+        "nombre": "conciliacion_eventos",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "8 leídos = 4 conservados + 4 excluidos"
+      },
+      {
+        "nombre": "exclusiones_dolar",
+        "resultado": "cumple",
+        "severidad": "advertencia",
+        "detalle": "0 excluidos por limpieza; no son errores en las salidas"
+      },
+      {
+        "nombre": "conciliacion_dolar",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "248 leídos = 248 conservados + 0 excluidos"
+      },
+      {
+        "nombre": "precios_validos",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "precio positivo, mes válido, tipo conocido y unicidad tipo-mes"
+      },
+      {
+        "nombre": "cobertura_tipo_mes",
+        "resultado": "no_cumple",
+        "severidad": "advertencia",
+        "detalle": "33/36 combinaciones observadas; sin imputación"
+      },
+      {
+        "nombre": "disponibilidad_dolar",
+        "resultado": "cumple",
+        "severidad": "advertencia",
+        "detalle": "captura archivos/dolar_2025_crudo.json; afecta dólar mensual y precio del alimento en USD"
+      },
+      {
+        "nombre": "actualizacion_api",
+        "resultado": "cumple",
+        "severidad": "advertencia",
+        "detalle": "captura archivos/dolar_2025_crudo.json"
+      },
+      {
+        "nombre": "dolar_valido",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "fechas únicas de 2025 y CLP/USD positivo"
+      },
+      {
+        "nombre": "eventos_validos",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "identificadores únicos, fechas ordenadas, mortalidad y jaulas válidas"
+      },
+      {
+        "nombre": "evento_graficos",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "EV-8001 necesario para los gráficos actuales de mortalidad y basal"
+      },
+      {
+        "nombre": "precio_meses_operacion",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "cada mes operativo tiene al menos un precio para el promedio existente"
+      },
+      {
+        "nombre": "observaciones_EV-8001",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "operación conservada en las jaulas y fechas del evento"
+      },
+      {
+        "nombre": "observaciones_EV-8003",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "operación conservada en las jaulas y fechas del evento"
+      },
+      {
+        "nombre": "observaciones_EV-8004",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "operación conservada en las jaulas y fechas del evento"
+      },
+      {
+        "nombre": "observaciones_EV-8002",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "operación conservada en las jaulas y fechas del evento"
+      },
+      {
+        "nombre": "denominador_basal",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "cada lote utilizado dispone de población acumulada positiva fuera de eventos"
+      },
+      {
+        "nombre": "denominadores_indicadores",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "grupos de centros, meses, resto, especies y jaulas del centro top; inválidos: []"
+      },
+      {
+        "nombre": "denominador_fcr_neto_centros",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "crecimiento neto positivo por centro exigido por metricas_fcr.py"
+      },
+      {
+        "nombre": "netos_no_definidos_costo",
+        "resultado": "no_cumple",
+        "severidad": "advertencia",
+        "detalle": "costo_mortalidad.py deja FCR y costo netos vacíos cuando G <= M; grupos: ['2025-08']"
+      },
+      {
+        "nombre": "denominador_verificacion_crecimiento",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "hay pares consecutivos para la comprobación de crecimiento ya existente"
+      },
+      {
+        "nombre": "salidas_requeridas",
+        "resultado": "cumple",
+        "severidad": "error",
+        "detalle": "ausentes o vacías: []"
+      }
+    ],
+    "etapas": [
+      "clean_sqlite",
+      "limpieza_externas.py",
+      "metricas_fcr.py",
+      "costo_mortalidad.py",
+      "graficos_costos.py",
+      "graficos_fcr.py",
+      "graficos_mortalidad.py",
+      "graficos_basal.py"
+    ],
+    "duracion_segundos": 7.859,
+    "fin": "2026-11-13T22:16:44.766373+00:00",
+    "verificacion_en_copia_temporal": true
+  },
+  "pruebas": [
+    "copia sin outputs previos",
+    "recarga sin duplicados",
+    "igualdad de todas las tablas SQLite, CSV y celdas Excel",
+    "API fallida con respaldo y mismas cifras",
+    "actualización inválida rechazada",
+    "fuente esencial ausente bloquea con resultados anteriores presentes",
+    "etapa sin productos bloquea aun con retorno cero",
+    "dólar ausente advierte y retira salidas opcionales antiguas",
+    "modo normal y etapa omitida con API prohibida",
+    "captura original e informe local intactos"
+  ],
+  "conteos": {
+    "centros": {
+      "leidos": 7,
+      "conservados": 7,
+      "excluidos": 0
+    },
+    "zonas": {
+      "leidos": 3,
+      "conservados": 3,
+      "excluidos": 0
+    },
+    "jaulas": {
+      "leidos": 42,
+      "conservados": 42,
+      "excluidos": 0
+    },
+    "lotes": {
+      "leidos": 42,
+      "conservados": 42,
+      "excluidos": 0
+    },
+    "especies": {
+      "leidos": 3,
+      "conservados": 3,
+      "excluidos": 0
+    },
+    "operacion_diaria": {
+      "leidos": 14409,
+      "conservados": 13157,
+      "excluidos": 1252
+    },
+    "cosechas": {
+      "leidos": 48,
+      "conservados": 42,
+      "excluidos": 6
+    },
+    "incidencias_no_excluyentes_sqlite": {
+      "inferido": 1,
+      "advertencia": 377,
+      "corregido": 690
+    },
+    "precios": {
+      "leidos": 34,
+      "conservados": 33,
+      "excluidos": 1,
+      "no_registros": 2
+    },
+    "eventos": {
+      "leidos": 8,
+      "conservados": 4,
+      "excluidos": 4,
+      "no_registros": 0
+    },
+    "dolar": {
+      "leidos": 248,
+      "conservados": 248,
+      "excluidos": 0,
+      "no_registros": 0
+    },
+    "completitud_precios": {
+      "esperados": 36,
+      "observados": 33,
+      "porcentaje": 91.66666666666667
+    }
+  },
+  "resultado": "cumple",
+  "escenarios": {
+    "api_fallida": {
+      "estado": "ok_con_advertencias",
+      "fuente_dolar": "captura archivos/dolar_2025_crudo.json; API fallida (URLError: <urlopen error fallo controlado>)"
+    },
+    "fuente_esencial_ausente": {
+      "codigo": 1,
+      "estado": "fallida"
+    },
+    "etapa_sin_productos": {
+      "codigo": 1,
+      "estado": "fallida"
+    },
+    "dolar_ausente": {
+      "estado": "ok_con_advertencias"
+    }
+  },
+  "informes_escenarios": {
+    "api_fallida": {
+      "fecha": "2026-11-13T22:16:11.254873+00:00",
+      "estado": "ok_con_advertencias",
+      "fuentes": {
+        "sqlite": {
+          "ruta": "archivos/origen_acuicultura.sqlite",
+          "disponible": true,
+          "sha256": "6959bd2204e33477199917b1665f2841a52977573b115c6a752ade3b3fa037b3"
+        },
+        "precios": {
+          "ruta": "archivos/origen_costos_alimento.csv",
+          "disponible": true,
+          "sha256": "7c59a030ea2b622a74ac46ae51cac9e27a9dbd80a6e0ab7398cc75433204a924"
+        },
+        "eventos": {
+          "ruta": "archivos/origen_eventos_sanitarios.json",
+          "disponible": true,
+          "sha256": "28d4f0f4fccfd347804576ab1f9172b6e0815f5d1e9cf2bb7769fe15cf0fa68a"
+        },
+        "dolar": {
+          "ruta": "archivos/dolar_2025_crudo.json",
+          "disponible": true,
+          "sha256": "66b64fabbbdf31d0d5984aaf7dbb8795f7981ba55608d35384e26de4c65ef0cd",
+          "utilizada": "captura archivos/dolar_2025_crudo.json; API fallida (URLError: <urlopen error fallo controlado>)"
+        }
+      },
+      "conteos": {
+        "centros": {
+          "leidos": 7,
+          "conservados": 7,
+          "excluidos": 0
+        },
+        "zonas": {
+          "leidos": 3,
+          "conservados": 3,
+          "excluidos": 0
+        },
+        "jaulas": {
+          "leidos": 42,
+          "conservados": 42,
+          "excluidos": 0
+        },
+        "lotes": {
+          "leidos": 42,
+          "conservados": 42,
+          "excluidos": 0
+        },
+        "especies": {
+          "leidos": 3,
+          "conservados": 3,
+          "excluidos": 0
+        },
+        "operacion_diaria": {
+          "leidos": 14409,
+          "conservados": 13157,
+          "excluidos": 1252
+        },
+        "cosechas": {
+          "leidos": 48,
+          "conservados": 42,
+          "excluidos": 6
+        },
+        "incidencias_no_excluyentes_sqlite": {
+          "inferido": 1,
+          "advertencia": 377,
+          "corregido": 690
+        },
+        "precios": {
+          "leidos": 34,
+          "conservados": 33,
+          "excluidos": 1,
+          "no_registros": 2
+        },
+        "eventos": {
+          "leidos": 8,
+          "conservados": 4,
+          "excluidos": 4,
+          "no_registros": 0
+        },
+        "dolar": {
+          "leidos": 248,
+          "conservados": 248,
+          "excluidos": 0,
+          "no_registros": 0
+        },
+        "completitud_precios": {
+          "esperados": 36,
+          "observados": 33,
+          "porcentaje": 91.66666666666667
+        }
+      },
+      "comprobaciones": [
+        {
+          "nombre": "fuente_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_acuicultura.sqlite; si falta o es inválida afecta FCR, costos, basal y gráficos"
+        },
+        {
+          "nombre": "fuente_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_costos_alimento.csv; si falta o es inválida afecta costos y gráficos de costos y basal"
+        },
+        {
+          "nombre": "fuente_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_eventos_sanitarios.json; si falta o es inválida afecta basal, exceso y gráficos sanitarios"
+        },
+        {
+          "nombre": "integridad_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "integridad física de la fuente operativa"
+        },
+        {
+          "nombre": "estructura_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "columnas necesarias para limpiar precios"
+        },
+        {
+          "nombre": "estructura_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "lista de eventos presente y no vacía"
+        },
+        {
+          "nombre": "exclusiones_centros",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_centros",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "7 leídos = 7 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_zonas",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_zonas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "3 leídos = 3 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_jaulas",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_jaulas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "42 leídos = 42 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_lotes",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_lotes",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "42 leídos = 42 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_especies",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_especies",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "3 leídos = 3 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_operacion_diaria",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "1252 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_operacion_diaria",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "14409 leídos = 13157 conservados + 1252 excluidos"
+        },
+        {
+          "nombre": "exclusiones_cosechas",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "6 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_cosechas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "48 leídos = 42 conservados + 6 excluidos"
+        },
+        {
+          "nombre": "catalogos_unicos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "identificadores únicos en los cinco catálogos"
+        },
+        {
+          "nombre": "referencias_catalogos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "referencias de centros, jaulas, lotes y especies depuradas"
+        },
+        {
+          "nombre": "clave_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "unicidad fecha-centro-jaula-lote"
+        },
+        {
+          "nombre": "referencias_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación vinculada al centro, jaula, lote y especie correspondientes"
+        },
+        {
+          "nombre": "periodo_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "fechas de 2025 y mes coherente"
+        },
+        {
+          "nombre": "cantidades_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cantidades finitas y límites existentes; población positiva protege el peso medio"
+        },
+        {
+          "nombre": "cosechas_validas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "referencias, fechas y kilos de cosechas"
+        },
+        {
+          "nombre": "advertencias_limpieza_sqlite",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "377 advertencias conservadas según las decisiones existentes"
+        },
+        {
+          "nombre": "exclusiones_precios",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "1 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "34 leídos = 33 conservados + 1 excluidos"
+        },
+        {
+          "nombre": "exclusiones_eventos",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "4 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "8 leídos = 4 conservados + 4 excluidos"
+        },
+        {
+          "nombre": "exclusiones_dolar",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_dolar",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "248 leídos = 248 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "precios_validos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "precio positivo, mes válido, tipo conocido y unicidad tipo-mes"
+        },
+        {
+          "nombre": "cobertura_tipo_mes",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "33/36 combinaciones observadas; sin imputación"
+        },
+        {
+          "nombre": "disponibilidad_dolar",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "captura archivos/dolar_2025_crudo.json; API fallida (URLError: <urlopen error fallo controlado>); afecta dólar mensual y precio del alimento en USD"
+        },
+        {
+          "nombre": "actualizacion_api",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "captura archivos/dolar_2025_crudo.json; API fallida (URLError: <urlopen error fallo controlado>)"
+        },
+        {
+          "nombre": "dolar_valido",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "fechas únicas de 2025 y CLP/USD positivo"
+        },
+        {
+          "nombre": "eventos_validos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "identificadores únicos, fechas ordenadas, mortalidad y jaulas válidas"
+        },
+        {
+          "nombre": "evento_graficos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "EV-8001 necesario para los gráficos actuales de mortalidad y basal"
+        },
+        {
+          "nombre": "precio_meses_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cada mes operativo tiene al menos un precio para el promedio existente"
+        },
+        {
+          "nombre": "observaciones_EV-8001",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8003",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8004",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8002",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "denominador_basal",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cada lote utilizado dispone de población acumulada positiva fuera de eventos"
+        },
+        {
+          "nombre": "denominadores_indicadores",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "grupos de centros, meses, resto, especies y jaulas del centro top; inválidos: []"
+        },
+        {
+          "nombre": "denominador_fcr_neto_centros",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "crecimiento neto positivo por centro exigido por metricas_fcr.py"
+        },
+        {
+          "nombre": "netos_no_definidos_costo",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "costo_mortalidad.py deja FCR y costo netos vacíos cuando G <= M; grupos: ['2025-08']"
+        },
+        {
+          "nombre": "denominador_verificacion_crecimiento",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "hay pares consecutivos para la comprobación de crecimiento ya existente"
+        },
+        {
+          "nombre": "salidas_requeridas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "ausentes o vacías: []"
+        }
+      ],
+      "etapas": [
+        "clean_sqlite",
+        "limpieza_externas.py",
+        "metricas_fcr.py",
+        "costo_mortalidad.py",
+        "graficos_costos.py",
+        "graficos_fcr.py",
+        "graficos_mortalidad.py",
+        "graficos_basal.py"
+      ],
+      "duracion_segundos": 8.625,
+      "fin": "2026-11-13T22:16:19.866513+00:00"
+    },
+    "fuente_esencial_ausente": {
+      "fecha": "2026-11-13T22:16:20.505472+00:00",
+      "estado": "fallida",
+      "fuentes": {
+        "sqlite": {
+          "ruta": "archivos/origen_acuicultura.sqlite",
+          "disponible": true,
+          "sha256": "6959bd2204e33477199917b1665f2841a52977573b115c6a752ade3b3fa037b3"
+        },
+        "precios": {
+          "ruta": "archivos/origen_costos_alimento.csv",
+          "disponible": false
+        }
+      },
+      "conteos": {},
+      "comprobaciones": [
+        {
+          "nombre": "fuente_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_acuicultura.sqlite; si falta o es inválida afecta FCR, costos, basal y gráficos"
+        },
+        {
+          "nombre": "fuente_precios",
+          "resultado": "no_cumple",
+          "severidad": "error",
+          "detalle": "origen_costos_alimento.csv; si falta o es inválida afecta costos y gráficos de costos y basal"
+        },
+        {
+          "nombre": "ejecucion",
+          "resultado": "no_cumple",
+          "severidad": "error",
+          "detalle": "ValueError: fuente_precios: origen_costos_alimento.csv; si falta o es inválida afecta costos y gráficos de costos y basal"
+        }
+      ],
+      "etapas": [],
+      "duracion_segundos": 0.0,
+      "fin": "2026-11-13T22:16:20.505472+00:00"
+    },
+    "etapa_sin_productos": {
+      "fecha": "2026-11-13T22:16:20.642106+00:00",
+      "estado": "fallida",
+      "fuentes": {
+        "sqlite": {
+          "ruta": "archivos/origen_acuicultura.sqlite",
+          "disponible": true,
+          "sha256": "6959bd2204e33477199917b1665f2841a52977573b115c6a752ade3b3fa037b3"
+        },
+        "precios": {
+          "ruta": "archivos/origen_costos_alimento.csv",
+          "disponible": true,
+          "sha256": "7c59a030ea2b622a74ac46ae51cac9e27a9dbd80a6e0ab7398cc75433204a924"
+        },
+        "eventos": {
+          "ruta": "archivos/origen_eventos_sanitarios.json",
+          "disponible": true,
+          "sha256": "28d4f0f4fccfd347804576ab1f9172b6e0815f5d1e9cf2bb7769fe15cf0fa68a"
+        },
+        "dolar": {
+          "ruta": "archivos/dolar_2025_crudo.json",
+          "disponible": true,
+          "sha256": "66b64fabbbdf31d0d5984aaf7dbb8795f7981ba55608d35384e26de4c65ef0cd",
+          "utilizada": "captura archivos/dolar_2025_crudo.json"
+        }
+      },
+      "conteos": {
+        "centros": {
+          "leidos": 7,
+          "conservados": 7,
+          "excluidos": 0
+        },
+        "zonas": {
+          "leidos": 3,
+          "conservados": 3,
+          "excluidos": 0
+        },
+        "jaulas": {
+          "leidos": 42,
+          "conservados": 42,
+          "excluidos": 0
+        },
+        "lotes": {
+          "leidos": 42,
+          "conservados": 42,
+          "excluidos": 0
+        },
+        "especies": {
+          "leidos": 3,
+          "conservados": 3,
+          "excluidos": 0
+        },
+        "operacion_diaria": {
+          "leidos": 14409,
+          "conservados": 13157,
+          "excluidos": 1252
+        },
+        "cosechas": {
+          "leidos": 48,
+          "conservados": 42,
+          "excluidos": 6
+        },
+        "incidencias_no_excluyentes_sqlite": {
+          "inferido": 1,
+          "advertencia": 377,
+          "corregido": 690
+        },
+        "precios": {
+          "leidos": 34,
+          "conservados": 33,
+          "excluidos": 1,
+          "no_registros": 2
+        },
+        "eventos": {
+          "leidos": 8,
+          "conservados": 4,
+          "excluidos": 4,
+          "no_registros": 0
+        },
+        "dolar": {
+          "leidos": 248,
+          "conservados": 248,
+          "excluidos": 0,
+          "no_registros": 0
+        },
+        "completitud_precios": {
+          "esperados": 36,
+          "observados": 33,
+          "porcentaje": 91.66666666666667
+        }
+      },
+      "comprobaciones": [
+        {
+          "nombre": "fuente_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_acuicultura.sqlite; si falta o es inválida afecta FCR, costos, basal y gráficos"
+        },
+        {
+          "nombre": "fuente_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_costos_alimento.csv; si falta o es inválida afecta costos y gráficos de costos y basal"
+        },
+        {
+          "nombre": "fuente_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_eventos_sanitarios.json; si falta o es inválida afecta basal, exceso y gráficos sanitarios"
+        },
+        {
+          "nombre": "integridad_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "integridad física de la fuente operativa"
+        },
+        {
+          "nombre": "estructura_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "columnas necesarias para limpiar precios"
+        },
+        {
+          "nombre": "estructura_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "lista de eventos presente y no vacía"
+        },
+        {
+          "nombre": "exclusiones_centros",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_centros",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "7 leídos = 7 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_zonas",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_zonas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "3 leídos = 3 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_jaulas",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_jaulas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "42 leídos = 42 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_lotes",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_lotes",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "42 leídos = 42 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_especies",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_especies",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "3 leídos = 3 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_operacion_diaria",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "1252 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_operacion_diaria",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "14409 leídos = 13157 conservados + 1252 excluidos"
+        },
+        {
+          "nombre": "exclusiones_cosechas",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "6 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_cosechas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "48 leídos = 42 conservados + 6 excluidos"
+        },
+        {
+          "nombre": "catalogos_unicos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "identificadores únicos en los cinco catálogos"
+        },
+        {
+          "nombre": "referencias_catalogos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "referencias de centros, jaulas, lotes y especies depuradas"
+        },
+        {
+          "nombre": "clave_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "unicidad fecha-centro-jaula-lote"
+        },
+        {
+          "nombre": "referencias_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación vinculada al centro, jaula, lote y especie correspondientes"
+        },
+        {
+          "nombre": "periodo_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "fechas de 2025 y mes coherente"
+        },
+        {
+          "nombre": "cantidades_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cantidades finitas y límites existentes; población positiva protege el peso medio"
+        },
+        {
+          "nombre": "cosechas_validas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "referencias, fechas y kilos de cosechas"
+        },
+        {
+          "nombre": "advertencias_limpieza_sqlite",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "377 advertencias conservadas según las decisiones existentes"
+        },
+        {
+          "nombre": "exclusiones_precios",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "1 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "34 leídos = 33 conservados + 1 excluidos"
+        },
+        {
+          "nombre": "exclusiones_eventos",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "4 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "8 leídos = 4 conservados + 4 excluidos"
+        },
+        {
+          "nombre": "exclusiones_dolar",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_dolar",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "248 leídos = 248 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "precios_validos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "precio positivo, mes válido, tipo conocido y unicidad tipo-mes"
+        },
+        {
+          "nombre": "cobertura_tipo_mes",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "33/36 combinaciones observadas; sin imputación"
+        },
+        {
+          "nombre": "disponibilidad_dolar",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "captura archivos/dolar_2025_crudo.json; afecta dólar mensual y precio del alimento en USD"
+        },
+        {
+          "nombre": "actualizacion_api",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "captura archivos/dolar_2025_crudo.json"
+        },
+        {
+          "nombre": "dolar_valido",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "fechas únicas de 2025 y CLP/USD positivo"
+        },
+        {
+          "nombre": "eventos_validos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "identificadores únicos, fechas ordenadas, mortalidad y jaulas válidas"
+        },
+        {
+          "nombre": "evento_graficos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "EV-8001 necesario para los gráficos actuales de mortalidad y basal"
+        },
+        {
+          "nombre": "precio_meses_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cada mes operativo tiene al menos un precio para el promedio existente"
+        },
+        {
+          "nombre": "observaciones_EV-8001",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8003",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8004",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8002",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "denominador_basal",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cada lote utilizado dispone de población acumulada positiva fuera de eventos"
+        },
+        {
+          "nombre": "denominadores_indicadores",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "grupos de centros, meses, resto, especies y jaulas del centro top; inválidos: []"
+        },
+        {
+          "nombre": "denominador_fcr_neto_centros",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "crecimiento neto positivo por centro exigido por metricas_fcr.py"
+        },
+        {
+          "nombre": "netos_no_definidos_costo",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "costo_mortalidad.py deja FCR y costo netos vacíos cuando G <= M; grupos: ['2025-08']"
+        },
+        {
+          "nombre": "denominador_verificacion_crecimiento",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "hay pares consecutivos para la comprobación de crecimiento ya existente"
+        },
+        {
+          "nombre": "salidas_requeridas",
+          "resultado": "no_cumple",
+          "severidad": "error",
+          "detalle": "ausentes o vacías: ['output_persona5/02_fcr_bruto_vs_neto.png', 'output_persona5/02_datos_fcr.csv', 'output_persona5/02_interpretacion_fcr.md']"
+        },
+        {
+          "nombre": "ejecucion",
+          "resultado": "no_cumple",
+          "severidad": "error",
+          "detalle": "ValueError: salidas_requeridas: ausentes o vacías: ['output_persona5/02_fcr_bruto_vs_neto.png', 'output_persona5/02_datos_fcr.csv', 'output_persona5/02_interpretacion_fcr.md']"
+        }
+      ],
+      "etapas": [
+        "clean_sqlite",
+        "limpieza_externas.py",
+        "metricas_fcr.py",
+        "costo_mortalidad.py",
+        "graficos_costos.py",
+        "graficos_fcr.py",
+        "graficos_mortalidad.py",
+        "graficos_basal.py"
+      ],
+      "duracion_segundos": 7.969,
+      "fin": "2026-11-13T22:16:28.612439+00:00"
+    },
+    "dolar_ausente": {
+      "fecha": "2026-11-13T22:16:28.812012+00:00",
+      "estado": "ok_con_advertencias",
+      "fuentes": {
+        "sqlite": {
+          "ruta": "archivos/origen_acuicultura.sqlite",
+          "disponible": true,
+          "sha256": "6959bd2204e33477199917b1665f2841a52977573b115c6a752ade3b3fa037b3"
+        },
+        "precios": {
+          "ruta": "archivos/origen_costos_alimento.csv",
+          "disponible": true,
+          "sha256": "7c59a030ea2b622a74ac46ae51cac9e27a9dbd80a6e0ab7398cc75433204a924"
+        },
+        "eventos": {
+          "ruta": "archivos/origen_eventos_sanitarios.json",
+          "disponible": true,
+          "sha256": "28d4f0f4fccfd347804576ab1f9172b6e0815f5d1e9cf2bb7769fe15cf0fa68a"
+        },
+        "dolar": {
+          "ruta": "archivos/dolar_2025_crudo.json",
+          "disponible": false,
+          "utilizada": "no disponible; captura inválida o ausente (FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\romib\\\\AppData\\\\Local\\\\Temp\\\\aquafiordo_e2_jwugk5ti\\\\archivos\\\\dolar_2025_crudo.json')"
+        }
+      },
+      "conteos": {
+        "centros": {
+          "leidos": 7,
+          "conservados": 7,
+          "excluidos": 0
+        },
+        "zonas": {
+          "leidos": 3,
+          "conservados": 3,
+          "excluidos": 0
+        },
+        "jaulas": {
+          "leidos": 42,
+          "conservados": 42,
+          "excluidos": 0
+        },
+        "lotes": {
+          "leidos": 42,
+          "conservados": 42,
+          "excluidos": 0
+        },
+        "especies": {
+          "leidos": 3,
+          "conservados": 3,
+          "excluidos": 0
+        },
+        "operacion_diaria": {
+          "leidos": 14409,
+          "conservados": 13157,
+          "excluidos": 1252
+        },
+        "cosechas": {
+          "leidos": 48,
+          "conservados": 42,
+          "excluidos": 6
+        },
+        "incidencias_no_excluyentes_sqlite": {
+          "inferido": 1,
+          "advertencia": 377,
+          "corregido": 690
+        },
+        "precios": {
+          "leidos": 34,
+          "conservados": 33,
+          "excluidos": 1,
+          "no_registros": 2
+        },
+        "eventos": {
+          "leidos": 8,
+          "conservados": 4,
+          "excluidos": 4,
+          "no_registros": 0
+        },
+        "dolar": {
+          "leidos": 0,
+          "conservados": 0,
+          "excluidos": 0,
+          "no_registros": 0
+        },
+        "completitud_precios": {
+          "esperados": 36,
+          "observados": 33,
+          "porcentaje": 91.66666666666667
+        }
+      },
+      "comprobaciones": [
+        {
+          "nombre": "fuente_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_acuicultura.sqlite; si falta o es inválida afecta FCR, costos, basal y gráficos"
+        },
+        {
+          "nombre": "fuente_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_costos_alimento.csv; si falta o es inválida afecta costos y gráficos de costos y basal"
+        },
+        {
+          "nombre": "fuente_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_eventos_sanitarios.json; si falta o es inválida afecta basal, exceso y gráficos sanitarios"
+        },
+        {
+          "nombre": "integridad_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "integridad física de la fuente operativa"
+        },
+        {
+          "nombre": "estructura_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "columnas necesarias para limpiar precios"
+        },
+        {
+          "nombre": "estructura_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "lista de eventos presente y no vacía"
+        },
+        {
+          "nombre": "exclusiones_centros",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_centros",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "7 leídos = 7 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_zonas",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_zonas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "3 leídos = 3 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_jaulas",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_jaulas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "42 leídos = 42 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_lotes",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_lotes",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "42 leídos = 42 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_especies",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_especies",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "3 leídos = 3 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_operacion_diaria",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "1252 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_operacion_diaria",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "14409 leídos = 13157 conservados + 1252 excluidos"
+        },
+        {
+          "nombre": "exclusiones_cosechas",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "6 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_cosechas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "48 leídos = 42 conservados + 6 excluidos"
+        },
+        {
+          "nombre": "catalogos_unicos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "identificadores únicos en los cinco catálogos"
+        },
+        {
+          "nombre": "referencias_catalogos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "referencias de centros, jaulas, lotes y especies depuradas"
+        },
+        {
+          "nombre": "clave_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "unicidad fecha-centro-jaula-lote"
+        },
+        {
+          "nombre": "referencias_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación vinculada al centro, jaula, lote y especie correspondientes"
+        },
+        {
+          "nombre": "periodo_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "fechas de 2025 y mes coherente"
+        },
+        {
+          "nombre": "cantidades_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cantidades finitas y límites existentes; población positiva protege el peso medio"
+        },
+        {
+          "nombre": "cosechas_validas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "referencias, fechas y kilos de cosechas"
+        },
+        {
+          "nombre": "advertencias_limpieza_sqlite",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "377 advertencias conservadas según las decisiones existentes"
+        },
+        {
+          "nombre": "exclusiones_precios",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "1 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "34 leídos = 33 conservados + 1 excluidos"
+        },
+        {
+          "nombre": "exclusiones_eventos",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "4 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "8 leídos = 4 conservados + 4 excluidos"
+        },
+        {
+          "nombre": "exclusiones_dolar",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_dolar",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "0 leídos = 0 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "precios_validos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "precio positivo, mes válido, tipo conocido y unicidad tipo-mes"
+        },
+        {
+          "nombre": "cobertura_tipo_mes",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "33/36 combinaciones observadas; sin imputación"
+        },
+        {
+          "nombre": "disponibilidad_dolar",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "no disponible; captura inválida o ausente (FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\romib\\\\AppData\\\\Local\\\\Temp\\\\aquafiordo_e2_jwugk5ti\\\\archivos\\\\dolar_2025_crudo.json'); afecta dólar mensual y precio del alimento en USD"
+        },
+        {
+          "nombre": "actualizacion_api",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "no disponible; captura inválida o ausente (FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\romib\\\\AppData\\\\Local\\\\Temp\\\\aquafiordo_e2_jwugk5ti\\\\archivos\\\\dolar_2025_crudo.json')"
+        },
+        {
+          "nombre": "eventos_validos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "identificadores únicos, fechas ordenadas, mortalidad y jaulas válidas"
+        },
+        {
+          "nombre": "evento_graficos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "EV-8001 necesario para los gráficos actuales de mortalidad y basal"
+        },
+        {
+          "nombre": "precio_meses_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cada mes operativo tiene al menos un precio para el promedio existente"
+        },
+        {
+          "nombre": "observaciones_EV-8001",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8003",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8004",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8002",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "denominador_basal",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cada lote utilizado dispone de población acumulada positiva fuera de eventos"
+        },
+        {
+          "nombre": "denominadores_indicadores",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "grupos de centros, meses, resto, especies y jaulas del centro top; inválidos: []"
+        },
+        {
+          "nombre": "denominador_fcr_neto_centros",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "crecimiento neto positivo por centro exigido por metricas_fcr.py"
+        },
+        {
+          "nombre": "netos_no_definidos_costo",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "costo_mortalidad.py deja FCR y costo netos vacíos cuando G <= M; grupos: ['2025-08']"
+        },
+        {
+          "nombre": "denominador_verificacion_crecimiento",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "hay pares consecutivos para la comprobación de crecimiento ya existente"
+        },
+        {
+          "nombre": "salidas_requeridas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "ausentes o vacías: []"
+        }
+      ],
+      "etapas": [
+        "clean_sqlite",
+        "limpieza_externas.py",
+        "metricas_fcr.py",
+        "costo_mortalidad.py",
+        "graficos_costos.py",
+        "graficos_fcr.py",
+        "graficos_mortalidad.py",
+        "graficos_basal.py"
+      ],
+      "duracion_segundos": 7.922,
+      "fin": "2026-11-13T22:16:36.733389+00:00"
+    }
+  },
+  "instalacion_limpia": {
+    "procedencia": "entorno virtual nuevo con pip install -r requirements.txt y copia temporal sin outputs previos",
+    "codigo": 0,
+    "informe_temporal": {
+      "fecha": "2026-11-13T22:16:56.143756+00:00",
+      "estado": "ok_con_advertencias",
+      "fuentes": {
+        "sqlite": {
+          "ruta": "archivos/origen_acuicultura.sqlite",
+          "disponible": true,
+          "sha256": "6959bd2204e33477199917b1665f2841a52977573b115c6a752ade3b3fa037b3"
+        },
+        "precios": {
+          "ruta": "archivos/origen_costos_alimento.csv",
+          "disponible": true,
+          "sha256": "7c59a030ea2b622a74ac46ae51cac9e27a9dbd80a6e0ab7398cc75433204a924"
+        },
+        "eventos": {
+          "ruta": "archivos/origen_eventos_sanitarios.json",
+          "disponible": true,
+          "sha256": "28d4f0f4fccfd347804576ab1f9172b6e0815f5d1e9cf2bb7769fe15cf0fa68a"
+        },
+        "dolar": {
+          "ruta": "archivos/dolar_2025_crudo.json",
+          "disponible": true,
+          "sha256": "66b64fabbbdf31d0d5984aaf7dbb8795f7981ba55608d35384e26de4c65ef0cd",
+          "utilizada": "captura archivos/dolar_2025_crudo.json"
+        }
+      },
+      "conteos": {
+        "centros": {
+          "leidos": 7,
+          "conservados": 7,
+          "excluidos": 0
+        },
+        "zonas": {
+          "leidos": 3,
+          "conservados": 3,
+          "excluidos": 0
+        },
+        "jaulas": {
+          "leidos": 42,
+          "conservados": 42,
+          "excluidos": 0
+        },
+        "lotes": {
+          "leidos": 42,
+          "conservados": 42,
+          "excluidos": 0
+        },
+        "especies": {
+          "leidos": 3,
+          "conservados": 3,
+          "excluidos": 0
+        },
+        "operacion_diaria": {
+          "leidos": 14409,
+          "conservados": 13157,
+          "excluidos": 1252
+        },
+        "cosechas": {
+          "leidos": 48,
+          "conservados": 42,
+          "excluidos": 6
+        },
+        "incidencias_no_excluyentes_sqlite": {
+          "inferido": 1,
+          "advertencia": 377,
+          "corregido": 690
+        },
+        "precios": {
+          "leidos": 34,
+          "conservados": 33,
+          "excluidos": 1,
+          "no_registros": 2
+        },
+        "eventos": {
+          "leidos": 8,
+          "conservados": 4,
+          "excluidos": 4,
+          "no_registros": 0
+        },
+        "dolar": {
+          "leidos": 248,
+          "conservados": 248,
+          "excluidos": 0,
+          "no_registros": 0
+        },
+        "completitud_precios": {
+          "esperados": 36,
+          "observados": 33,
+          "porcentaje": 91.66666666666667
+        }
+      },
+      "comprobaciones": [
+        {
+          "nombre": "fuente_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_acuicultura.sqlite; si falta o es inválida afecta FCR, costos, basal y gráficos"
+        },
+        {
+          "nombre": "fuente_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_costos_alimento.csv; si falta o es inválida afecta costos y gráficos de costos y basal"
+        },
+        {
+          "nombre": "fuente_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "origen_eventos_sanitarios.json; si falta o es inválida afecta basal, exceso y gráficos sanitarios"
+        },
+        {
+          "nombre": "integridad_sqlite",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "integridad física de la fuente operativa"
+        },
+        {
+          "nombre": "estructura_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "columnas necesarias para limpiar precios"
+        },
+        {
+          "nombre": "estructura_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "lista de eventos presente y no vacía"
+        },
+        {
+          "nombre": "exclusiones_centros",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_centros",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "7 leídos = 7 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_zonas",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_zonas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "3 leídos = 3 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_jaulas",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_jaulas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "42 leídos = 42 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_lotes",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_lotes",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "42 leídos = 42 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_especies",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_especies",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "3 leídos = 3 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "exclusiones_operacion_diaria",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "1252 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_operacion_diaria",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "14409 leídos = 13157 conservados + 1252 excluidos"
+        },
+        {
+          "nombre": "exclusiones_cosechas",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "6 filas excluidas por reglas existentes"
+        },
+        {
+          "nombre": "conciliacion_cosechas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "48 leídos = 42 conservados + 6 excluidos"
+        },
+        {
+          "nombre": "catalogos_unicos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "identificadores únicos en los cinco catálogos"
+        },
+        {
+          "nombre": "referencias_catalogos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "referencias de centros, jaulas, lotes y especies depuradas"
+        },
+        {
+          "nombre": "clave_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "unicidad fecha-centro-jaula-lote"
+        },
+        {
+          "nombre": "referencias_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación vinculada al centro, jaula, lote y especie correspondientes"
+        },
+        {
+          "nombre": "periodo_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "fechas de 2025 y mes coherente"
+        },
+        {
+          "nombre": "cantidades_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cantidades finitas y límites existentes; población positiva protege el peso medio"
+        },
+        {
+          "nombre": "cosechas_validas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "referencias, fechas y kilos de cosechas"
+        },
+        {
+          "nombre": "advertencias_limpieza_sqlite",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "377 advertencias conservadas según las decisiones existentes"
+        },
+        {
+          "nombre": "exclusiones_precios",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "1 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_precios",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "34 leídos = 33 conservados + 1 excluidos"
+        },
+        {
+          "nombre": "exclusiones_eventos",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "4 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_eventos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "8 leídos = 4 conservados + 4 excluidos"
+        },
+        {
+          "nombre": "exclusiones_dolar",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "0 excluidos por limpieza; no son errores en las salidas"
+        },
+        {
+          "nombre": "conciliacion_dolar",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "248 leídos = 248 conservados + 0 excluidos"
+        },
+        {
+          "nombre": "precios_validos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "precio positivo, mes válido, tipo conocido y unicidad tipo-mes"
+        },
+        {
+          "nombre": "cobertura_tipo_mes",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "33/36 combinaciones observadas; sin imputación"
+        },
+        {
+          "nombre": "disponibilidad_dolar",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "captura archivos/dolar_2025_crudo.json; afecta dólar mensual y precio del alimento en USD"
+        },
+        {
+          "nombre": "actualizacion_api",
+          "resultado": "cumple",
+          "severidad": "advertencia",
+          "detalle": "captura archivos/dolar_2025_crudo.json"
+        },
+        {
+          "nombre": "dolar_valido",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "fechas únicas de 2025 y CLP/USD positivo"
+        },
+        {
+          "nombre": "eventos_validos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "identificadores únicos, fechas ordenadas, mortalidad y jaulas válidas"
+        },
+        {
+          "nombre": "evento_graficos",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "EV-8001 necesario para los gráficos actuales de mortalidad y basal"
+        },
+        {
+          "nombre": "precio_meses_operacion",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cada mes operativo tiene al menos un precio para el promedio existente"
+        },
+        {
+          "nombre": "observaciones_EV-8001",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8003",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8004",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "observaciones_EV-8002",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "operación conservada en las jaulas y fechas del evento"
+        },
+        {
+          "nombre": "denominador_basal",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "cada lote utilizado dispone de población acumulada positiva fuera de eventos"
+        },
+        {
+          "nombre": "denominadores_indicadores",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "grupos de centros, meses, resto, especies y jaulas del centro top; inválidos: []"
+        },
+        {
+          "nombre": "denominador_fcr_neto_centros",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "crecimiento neto positivo por centro exigido por metricas_fcr.py"
+        },
+        {
+          "nombre": "netos_no_definidos_costo",
+          "resultado": "no_cumple",
+          "severidad": "advertencia",
+          "detalle": "costo_mortalidad.py deja FCR y costo netos vacíos cuando G <= M; grupos: ['2025-08']"
+        },
+        {
+          "nombre": "denominador_verificacion_crecimiento",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "hay pares consecutivos para la comprobación de crecimiento ya existente"
+        },
+        {
+          "nombre": "salidas_requeridas",
+          "resultado": "cumple",
+          "severidad": "error",
+          "detalle": "ausentes o vacías: []"
+        }
+      ],
+      "etapas": [
+        "clean_sqlite",
+        "limpieza_externas.py",
+        "metricas_fcr.py",
+        "costo_mortalidad.py",
+        "graficos_costos.py",
+        "graficos_fcr.py",
+        "graficos_mortalidad.py",
+        "graficos_basal.py"
+      ],
+      "duracion_segundos": 9.907,
+      "fin": "2026-11-13T22:17:06.045789+00:00"
+    },
+    "error": ""
+  },
+  "comprobaciones_puntuales": [
+    "escritor conserva informe preexistente y no crea informe ausente",
+    "verify sin informe previo no lo crea con procesos de cadena simulados",
+    "etapa omitida sin flag de actualizacion y consulta API prohibida"
+  ]
+}

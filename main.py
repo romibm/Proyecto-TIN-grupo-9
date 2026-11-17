@@ -1,6 +1,8 @@
+import argparse
 import collections
 import datetime as datetime_lib
 import math
+import os
 import re
 import sqlite3
 import subprocess
@@ -250,13 +252,18 @@ def clean_sqlite():
     save_sqlite(datos_sqlite_limpios_path, datasets)
     print(f'OK SQLite: {len(operation):,} filas de operación conservadas; {len(harvests)} cosechas válidas')
     print(f'Archivo: {datos_sqlite_limpios_path}')
+    return tables, datasets, audit
 
 def main():
     """ejecuta la limpieza de sqlite y los demás cálculos y gráficos de la entrega"""
-    clean_sqlite()
+    from calidad import QualityReport
 
+    parser = argparse.ArgumentParser(description='Recarga completa de AquaFiordo')
+    parser.add_argument('--actualizar-dolar', action='store_true',
+                        help='actualiza la captura cruda desde la API con respaldo local')
+    args = parser.parse_args()
     project_folder = Path(__file__).resolve().parent
-
+    report = QualityReport(project_folder)
     script_names = (
         'limpieza_externas.py',
         'metricas_fcr.py',
@@ -267,18 +274,39 @@ def main():
         'graficos_basal.py',
     )
 
-    # ejecutamos cada archivo con el mismo intérprete y detenemos el proceso si falla algún paso
-    for script_name in script_names:
-        print(f'Ejecutando {script_name}', flush=True)
-
-        subprocess.run(
-            [sys.executable, str(project_folder / script_name)],
-            cwd=project_folder,
-            check=True,
-        )
-
+    try:
+        report.preflight()
+        tables, datasets, audit = clean_sqlite()
+        report.sqlite_checks(tables, datasets, audit)
+        report.data['etapas'].append('clean_sqlite')
+        report.prepare_outputs()
+        dollar_available = False
+        # ejecutamos con el mismo intérprete y verificamos antes de calcular indicadores
+        for script_name in script_names:
+            print(f'Ejecutando {script_name}', flush=True)
+            command = [sys.executable, str(project_folder / script_name)]
+            if script_name == 'limpieza_externas.py' and args.actualizar_dolar:
+                command.append('--actualizar-dolar')
+            result = subprocess.run(command, cwd=project_folder, capture_output=True, text=True,
+                                    encoding='utf-8', errors='replace', env={**os.environ, 'PYTHONIOENCODING': 'utf-8'})
+            if result.returncode:
+                # conservamos un diagnóstico breve sin volcar tablas ni datos completos
+                detail = (result.stderr or result.stdout)[-4000:]
+                raise RuntimeError(f'{script_name} terminó con código {result.returncode}: {detail}')
+            if script_name == 'limpieza_externas.py':
+                dollar_available = report.external_checks()
+            report.data['etapas'].append(script_name)
+        report.outputs(dollar_available)
+        report.save()
+    except Exception as error:
+        report.save(error)
+        print(f'ERROR cadena incompleta: {error}', file=sys.stderr)
+        return 1
+    if report.data['estado'] == 'ok_con_advertencias':
+        print('ADVERTENCIAS: revisar output_calidad/ultima_ejecucion.json')
     print('OK cadena completa, resultados y gráficos generados')
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
