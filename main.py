@@ -298,6 +298,7 @@ def main():
                 dollar_available = report.external_checks()
             report.data['etapas'].append(script_name)
         report.outputs(dollar_available)
+        report.semantic_checks()
         report.save()
     except Exception as error:
         report.save(error)

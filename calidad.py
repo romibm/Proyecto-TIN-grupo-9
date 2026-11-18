@@ -283,3 +283,9 @@ class QualityReport:
         missing = [name for name in required if not (self.project_folder / name).is_file()
                    or (self.project_folder / name).stat().st_size == 0]
         self.check('salidas_requeridas', not missing, f'ausentes o vacías: {missing}')
+   
+    def semantic_checks(self):
+        """Registra los controles del modelo y sus métricas."""
+        from pruebas_semantica import comprobar_modelo
+
+        comprobar_modelo(self.project_folder, self.check)
