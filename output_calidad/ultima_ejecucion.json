@@ -1,5 +1,5 @@
 {
-  "fecha": "2026-11-13T22:21:04.090890+00:00",
+  "fecha": "2026-11-18T01:27:52.737739+00:00",
   "estado": "ok_con_advertencias",
   "fuentes": {
     "sqlite": {
@@ -10,12 +10,12 @@
     "precios": {
       "ruta": "archivos/origen_costos_alimento.csv",
       "disponible": true,
-      "sha256": "7c59a030ea2b622a74ac46ae51cac9e27a9dbd80a6e0ab7398cc75433204a924"
+      "sha256": "6335986429a4c8393a71bac628fa08d9a72f5b305a1c09e59fdb395827f1e885"
     },
     "eventos": {
       "ruta": "archivos/origen_eventos_sanitarios.json",
       "disponible": true,
-      "sha256": "28d4f0f4fccfd347804576ab1f9172b6e0815f5d1e9cf2bb7769fe15cf0fa68a"
+      "sha256": "cf7dbd7ba6eb01fd739474bc8f4137559e56511d873ab91cecb62311c75c0e3c"
     },
     "dolar": {
       "ruta": "archivos/dolar_2025_crudo.json",
@@ -310,7 +310,7 @@
       "nombre": "disponibilidad_dolar",
       "resultado": "cumple",
       "severidad": "advertencia",
-      "detalle": "captura archivos/dolar_2025_crudo.json; afecta dólar mensual y precio del alimento en USD"
+      "detalle": "captura archivos/dolar_2025_crudo.json; afecta el CSV depurado del dólar"
     },
     {
       "nombre": "actualizacion_api",
@@ -401,11 +401,72 @@
       "resultado": "cumple",
       "severidad": "error",
       "detalle": "ausentes o vacías: []"
+    },
+    {
+      "nombre": "sem_clave_hecho",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "Clave única fecha-centro-jaula-lote"
+    },
+    {
+      "nombre": "sem_referencias",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "Sin referencias huérfanas en las dimensiones"
+    },
+    {
+      "nombre": "sem_conservacion_grano",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "Mismas observaciones que la operación depurada"
+    },
+    {
+      "nombre": "sem_periodo",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "Fechas válidas dentro de 2025"
+    },
+    {
+      "nombre": "sem_rangos",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "Cantidades finitas; denominadores positivos; mortalidad válida"
+    },
+    {
+      "nombre": "sem_derivados",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "Peso, biomasa muerta y costo coherentes con sus componentes"
+    },
+    {
+      "nombre": "sem_basales",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "Dos basales por evento, tasas válidas y balance en peces y kg"
+    },
+    {
+      "nombre": "sem_fcr_consumidores",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "CSV y Excel coinciden con la estrella según su precisión"
+    },
+    {
+      "nombre": "sem_componentes_costos",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "La unión publicada descuenta el traslape una sola vez"
+    },
+    {
+      "nombre": "sem_propiedades",
+      "resultado": "cumple",
+      "severidad": "error",
+      "detalle": "5 pruebas de las reglas de cálculo"
     }
   ],
   "etapas": [
     "clean_sqlite",
     "limpieza_externas.py",
+    "modelo_semantico.py",
     "metricas_fcr.py",
     "costo_mortalidad.py",
     "graficos_costos.py",
@@ -413,6 +474,6 @@
     "graficos_mortalidad.py",
     "graficos_basal.py"
   ],
-  "duracion_segundos": 8.719,
-  "fin": "2026-11-13T22:21:12.805682+00:00"
+  "duracion_segundos": 11.857,
+  "fin": "2026-11-18T01:28:04.594778+00:00"
 }
