@@ -22,7 +22,7 @@ Se divide la suma de alimento entre la suma del denominador correspondiente. No 
 
 ## Fuente, filtros y grano
 
-Fuente: `output_persona1/datos_sqlite_limpios.sqlite`, tablas `operacion_limpia` y `centros`.
+Fuente analítica: `output_modelo/modelo_analitico.sqlite`, tablas `fact_operacion` y `dim_ubicacion`. El modelo se construye a partir de la operación depurada y las fuentes externas limpias. Las fórmulas ejecutables están centralizadas en `calcular_fcr()`, dentro de `capa_semantica.py`.
 
 Se utilizan las observaciones conservadas con fecha desde 2025-01-01 hasta 2025-12-31. No se excluyen filas adicionales en este cálculo. El grano del resultado es una fila por centro para el período 2025.
 
@@ -37,7 +37,7 @@ El bruto conserva todo el crecimiento registrado. El neto estimado descuenta la 
 
 `biomasa_kg / poblacion` se utiliza como peso promedio estimado en kg por pez. Por eso la biomasa muerta y el FCR neto se identifican como estimados. Se emplea toda la mortalidad registrada en las observaciones conservadas, sin atribuirla a un evento sanitario.
 
-El crecimiento neto estimado debe ser mayor que cero. Si no lo es, el script informa el centro y detiene el cálculo, en vez de producir un FCR sin interpretación válida.
+La función compartida devuelve un FCR neto estimado no definido cuando el crecimiento neto es menor o igual que cero. En el cálculo anual por centro, `metricas_fcr.py` exige un denominador neto positivo y detiene el cálculo si no se cumple. En los resúmenes mensuales de costos, el resultado no definido se conserva como tal.
 
 ## Resultados reproducidos
 
@@ -57,8 +57,8 @@ Skyring tiene el FCR más alto bajo ambas definiciones. Su cambio porcentual tam
 
 ## Cómo ejecutar
 
-Todo el código de la Entrega 1 se ejecuta con un comando (se explicó más detalladamente en el README.md):
+Todo el código de la Entrega 2 se ejecuta con un comando (se explicó más detalladamente en el README.md):
 
 ```powershell
-py main.py
+python main.py
 ```
