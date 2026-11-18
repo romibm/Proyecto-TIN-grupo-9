@@ -4,7 +4,11 @@ import sqlite3
 from contextlib import closing
 from pathlib import Path
 import pandas as pd
-from capa_semantica import SIN_EVENTO, preparar_operacion
+from capa_semantica import (
+    SIN_EVENTO,
+    preparar_operacion,
+    resumir_basales,
+)
 
 
 DDL = """
@@ -155,6 +159,11 @@ def materializar(carpeta):
         eventos,
     )
 
+    basales, detalle_basales = resumir_basales(
+        operacion,
+        eventos,
+    )
+
     # Dimensión Tiempo: calendario completo del año.
     fechas = pd.Series(
         pd.date_range("2025-01-01", "2025-12-31")
@@ -263,6 +272,18 @@ def materializar(carpeta):
 
     # Sustituye la salida después de completar y cerrar la nueva base.
     temporal.replace(destino)
+
+    basales.to_csv(
+        salida / "basales_eventos.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
+
+    detalle_basales.to_csv(
+        salida / "basales_por_lote.csv",
+        index=False,
+        encoding="utf-8-sig",
+    )
 
     for nombre, tabla in tablas.items():
         print(f"{nombre}: {len(tabla)} filas")

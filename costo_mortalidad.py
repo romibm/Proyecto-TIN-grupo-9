@@ -2,7 +2,13 @@
 import sqlite3
 from pathlib import Path
 import pandas as pd
-from capa_semantica import calcular_fcr, leer_operacion, SIN_EVENTO
+from capa_semantica import (
+    calcular_fcr,
+    leer_operacion,
+    SIN_EVENTO,
+    aplicar_basal,
+    BASAL_PRINCIPAL,
+)
 from contextlib import closing
 
 CARPETA = Path(__file__).resolve().parent
@@ -47,12 +53,9 @@ with closing(sqlite3.connect(
 
 precio_mes = op.groupby("mes")["precio_clp_kg"].first()
 
-# mortalidad basal por lote (días sin evento) y exceso en días de evento
-b = op[~op.en_evento].groupby('lote_id')[['mortalidad_n', 'poblacion']].sum()
-op['tasa_basal'] = op.lote_id.map(b.mortalidad_n / b.poblacion)
-op['muertes_esperadas'] = op.tasa_basal * op.poblacion
-op['exceso_n'] = (op.mortalidad_n - op.muertes_esperadas).where(op.en_evento, 0)
-op['exceso_kg'] = op.exceso_n * op.peso_kg
+# Referencia principal definida en la capa semántica.
+op = aplicar_basal(op, ev, BASAL_PRINCIPAL)
+
 
 def fcr_bruto_grupo(g):
     """Obtiene el FCR bruto de un grupo mediante la definición común."""
@@ -148,6 +151,52 @@ with pd.ExcelWriter(SALIDA / 'costo_mortalidad.xlsx') as w:
     pd.Series(imp).rename('valor').to_frame().to_excel(w, sheet_name='impacto')
     especie.round(3).to_excel(w, sheet_name='fcr_por_especie')
     precio_mes.rename('precio_promedio_clp_kg').to_excel(w, sheet_name='precio_mes')
+# Componentes económicos para comparar ambas referencias basales.
+carpeta_modelo = CARPETA / "output_modelo"
+
+basales = pd.read_csv(
+    carpeta_modelo / "basales_eventos.csv"
+)
+
+componentes = basales[
+    basales["centro_id"].eq(top)
+].copy()
+
+componentes["precio_medio_pagado_clp_kg"] = precio_pagado
+componentes["fcr_centro"] = r.fcr_bruto
+componentes["fcr_referencia_resto"] = resto.fcr_bruto
+
+componentes["A_fcr_clp"] = imp["A_sobrecosto_por_fcr_clp"]
+
+componentes["B_exceso_clp"] = (
+    componentes["exceso_kg"]
+    * r.fcr_bruto
+    * precio_pagado
+)
+
+componentes["basal_evento_clp"] = (
+    componentes["biomasa_basal_kg"]
+    * r.fcr_bruto
+    * precio_pagado
+)
+
+componentes["traslape_estimado_clp"] = (
+    componentes["exceso_kg"]
+    * (r.fcr_bruto - resto.fcr_bruto)
+    * precio_pagado
+)
+
+componentes["union_A_B_clp"] = (
+    componentes["A_fcr_clp"]
+    + componentes["B_exceso_clp"]
+    - componentes["traslape_estimado_clp"]
+)
+
+componentes.to_csv(
+    carpeta_modelo / "componentes_costos.csv",
+    index=False,
+    encoding="utf-8-sig",
+)
 print('OK costo y mortalidad. Centro top:', top)
 if __name__ == '__main__':
     pd.set_option('display.width', 250); pd.set_option('display.float_format', lambda v: f'{v:,.3f}')

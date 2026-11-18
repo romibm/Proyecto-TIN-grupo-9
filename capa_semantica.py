@@ -128,3 +128,161 @@ def leer_operacion(carpeta):
     op["en_evento"] = op["evento_id"].ne(SIN_EVENTO)
 
     return op
+
+BASAL_PRINCIPAL = "lote_sin_evento"
+BASAL_ALTERNATIVA = "lote_previa_evento"
+
+DEFINICIONES.update({
+    BASAL_PRINCIPAL: {
+        "nombre": "Basal por lote sin evento",
+        "formula": (
+            "SUM(mortalidad_n) / SUM(poblacion), "
+            "por lote en días sin evento de 2025"
+        ),
+        "unidad": "muertes/pez-día",
+        "principal": True,
+    },
+    BASAL_ALTERNATIVA: {
+        "nombre": "Basal por lote previa al evento",
+        "formula": (
+            "SUM(mortalidad_n) / SUM(poblacion), "
+            "por lote en días sin evento de 2025 "
+            "anteriores al inicio del evento evaluado"
+        ),
+        "unidad": "muertes/pez-día",
+        "principal": False,
+    },
+})
+
+def aplicar_basal(
+    operacion,
+    eventos,
+    basal_id=BASAL_PRINCIPAL,
+):
+    """Estima mortalidad esperada y exceso en observaciones con evento."""
+    if basal_id not in (BASAL_PRINCIPAL, BASAL_ALTERNATIVA):
+        raise ValueError(f"Referencia basal desconocida: {basal_id}")
+
+    op = operacion.copy()
+    op["fecha"] = pd.to_datetime(op["fecha"])
+    op["en_evento"] = op["evento_id"].ne(SIN_EVENTO)
+
+    normales = op[~op["en_evento"]].copy()
+    op["tasa_basal"] = float("nan")
+
+    for evento in eventos.itertuples(index=False):
+        seleccion = op["evento_id"].eq(evento.evento_id)
+
+        if not seleccion.any():
+            raise ValueError(
+                f"El evento {evento.evento_id} no tiene observaciones"
+            )
+
+        referencia = normales
+
+        if basal_id == BASAL_ALTERNATIVA:
+            referencia = normales[
+                normales["fecha"] < pd.Timestamp(evento.fecha_inicio)
+            ]
+
+        totales = referencia.groupby("lote_id")[
+            ["mortalidad_n", "poblacion"]
+        ].sum()
+
+        lotes_evento = set(op.loc[seleccion, "lote_id"])
+        faltantes = lotes_evento - set(totales.index)
+
+        if faltantes:
+            raise ValueError(
+                f"{evento.evento_id}: lotes sin historia para "
+                f"{basal_id}: {sorted(faltantes)}"
+            )
+
+        if not totales.loc[
+            sorted(lotes_evento), "poblacion"
+        ].gt(0).all():
+            raise ValueError("La exposición de referencia debe ser positiva")
+
+        tasas = totales["mortalidad_n"] / totales["poblacion"]
+
+        op.loc[seleccion, "tasa_basal"] = (
+            op.loc[seleccion, "lote_id"].map(tasas)
+        )
+
+    if op.loc[op["en_evento"], "tasa_basal"].isna().any():
+        raise ValueError("Hay observaciones de evento sin tasa basal")
+
+    op["muertes_esperadas"] = op["tasa_basal"] * op["poblacion"]
+
+    op["exceso_n"] = (
+        op["mortalidad_n"] - op["muertes_esperadas"]
+    ).where(op["en_evento"], 0)
+
+    op["exceso_kg"] = op["exceso_n"] * op["peso_kg"]
+
+    return op
+
+def resumir_basales(operacion, eventos):
+    """Publica ambas referencias por evento y por lote."""
+    resumenes = []
+    detalles = []
+
+    columnas_evento = [
+        "evento_id",
+        "centro_id",
+        "centro",
+        "fecha_inicio",
+        "fecha_fin",
+        "mortalidad_declarada_json_n",
+    ]
+
+    for basal_id in (BASAL_PRINCIPAL, BASAL_ALTERNATIVA):
+        calculada = aplicar_basal(operacion, eventos, basal_id)
+        datos = calculada[calculada["en_evento"]].copy()
+
+        datos["biomasa_basal_kg"] = (
+            datos["muertes_esperadas"] * datos["peso_kg"]
+        )
+
+        resumen = datos.groupby("evento_id").agg(
+            muertes_observadas_n=("mortalidad_n", "sum"),
+            muertes_esperadas_n=("muertes_esperadas", "sum"),
+            exceso_n=("exceso_n", "sum"),
+            biomasa_observada_kg=("muertos_kg", "sum"),
+            biomasa_basal_kg=("biomasa_basal_kg", "sum"),
+            exceso_kg=("exceso_kg", "sum"),
+            observaciones_conservadas=("fecha", "size"),
+        ).reset_index()
+
+        resumen = resumen.merge(
+            eventos[columnas_evento],
+            on="evento_id",
+            validate="one_to_one",
+        )
+
+        resumen["basal_id"] = basal_id
+        resumen["nombre_basal"] = DEFINICIONES[basal_id]["nombre"]
+        resumen["brecha_json_sqlite_n"] = (
+            resumen["mortalidad_declarada_json_n"]
+            - resumen["muertes_observadas_n"]
+        )
+
+        detalle = datos.groupby(
+            ["evento_id", "lote_id"]
+        ).agg(
+            tasa_basal=("tasa_basal", "first"),
+            muertes_observadas_n=("mortalidad_n", "sum"),
+            muertes_esperadas_n=("muertes_esperadas", "sum"),
+            exceso_n=("exceso_n", "sum"),
+            exceso_kg=("exceso_kg", "sum"),
+        ).reset_index()
+
+        detalle["basal_id"] = basal_id
+
+        resumenes.append(resumen)
+        detalles.append(detalle)
+
+    return (
+        pd.concat(resumenes, ignore_index=True),
+        pd.concat(detalles, ignore_index=True),
+    )
