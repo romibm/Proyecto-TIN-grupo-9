@@ -1,7 +1,7 @@
 # AquaFiordo · Entrega 2 · Persona 1, componente B
 
 Arquitectura y operación de la cadena existente. Entrada única: `python main.py`.
-No se incorpora un modelo nuevo ni se implementa el prototipo.
+La cadena incorpora la etapa de modelo semántico desarrollada para la E2 entre la limpieza y los cálculos.
 
 ## Capas y diagrama
 
@@ -12,7 +12,7 @@ Diagrama [editable en diagrams.net](docs/arquitectura.drawio) y [exportación SV
 | Orígenes | SQLite operativo y catálogos, CSV de precios, JSON sanitario entregados y API mindicador.cl para actualización explícita del dólar de 2025 |
 | Cruda | `archivos/origen_acuicultura.sqlite`, `origen_costos_alimento.csv`, `origen_eventos_sanitarios.json`, `dolar_2025_crudo.json`; entradas conservadas, separadas de resultados regenerables |
 | Depurada | `clean_sqlite()` en `main.py` produce `output_persona1/datos_sqlite_limpios.sqlite`; `limpieza_externas.py` produce CSV, incidencias y cobertura en `output_persona2/` |
-| Modelo analítico existente | `metricas_fcr.py` agrupa por centro en `output_persona3/fcr_por_centro.csv`; `costo_mortalidad.py` calcula las hojas del Excel `output_costo/costo_mortalidad.xlsx`. Esta capa describe esos cálculos, sin agregar tablas |
+| Modelo semántico y cálculos | `modelo_semantico.py` se ejecuta después de la limpieza y antes de los cálculos. Luego, `metricas_fcr.py` genera los indicadores por centro y `costo_mortalidad.py` calcula costos y mortalidad. |
 | Consumo | Cuatro scripts `graficos_*.py`: PNG, CSV y Markdown en `output_persona5/`; informe. Prototipo únicamente como consumo previsto |
 
 `main.py` coordina las etapas mediante el mismo intérprete y directorio del proyecto.
