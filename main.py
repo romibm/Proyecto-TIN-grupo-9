@@ -254,6 +254,34 @@ def clean_sqlite():
     print(f'Archivo: {datos_sqlite_limpios_path}')
     return tables, datasets, audit
 
+def _abrir_tablero_streamlit(project_folder, omitir):
+    """Levanta el tablero en Streamlit como ultimo paso de la cadena.
+
+    El tablero.html ya quedo generado como respaldo por generar_tablero.py, asi
+    que si Streamlit no esta instalado o se pasa --sin-tablero, solo se informa y
+    la cadena termina igual con exito.
+    """
+    import importlib.util
+    respaldo = project_folder / 'tablero' / 'tablero.html'
+    if omitir:
+        print(f'Tablero en vivo omitido (--sin-tablero). Respaldo: {respaldo}')
+        return
+    if importlib.util.find_spec('streamlit') is None:
+        print('Streamlit no esta instalado; se omite el tablero en vivo. '
+              f'Respaldo: {respaldo}. '
+              'Instalar con: py -m pip install -r tablero/requirements_tablero.txt')
+        return
+    app = project_folder / 'tablero' / 'tablero_app.py'
+    print('Abriendo el tablero en Streamlit (Ctrl+C para cerrar)...', flush=True)
+    try:
+        subprocess.run([sys.executable, '-m', 'streamlit', 'run', str(app)],
+                       cwd=project_folder)
+    except KeyboardInterrupt:
+        pass
+    except Exception as error:
+        print(f'No se pudo abrir Streamlit ({error}). Respaldo: {respaldo}')
+
+
 def main():
     """ejecuta la limpieza de sqlite y los demás cálculos y gráficos de la entrega"""
     from calidad import QualityReport
@@ -261,6 +289,8 @@ def main():
     parser = argparse.ArgumentParser(description='Recarga completa de AquaFiordo')
     parser.add_argument('--actualizar-dolar', action='store_true',
                         help='actualiza la captura cruda desde la API con respaldo local')
+    parser.add_argument('--sin-tablero', action='store_true',
+                        help='corre la cadena y genera tablero.html pero no levanta Streamlit')
     args = parser.parse_args()
     project_folder = Path(__file__).resolve().parent
     report = QualityReport(project_folder)
@@ -308,6 +338,7 @@ def main():
     if report.data['estado'] == 'ok_con_advertencias':
         print('ADVERTENCIAS: revisar output_calidad/ultima_ejecucion.json')
     print('OK cadena completa, resultados y gráficos generados')
+    _abrir_tablero_streamlit(project_folder, args.sin_tablero)
     return 0
 
 

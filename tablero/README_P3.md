@@ -24,17 +24,24 @@ El tablero no tiene datos pegados a mano. `generar_tablero.py` lee:
 - `output_persona2/precios_limpios.csv` → cobertura de precios.
 
 Son las mismas salidas que alimentan el informe, por eso el número de la pantalla
-es el del informe. Está enganchado a `main.py` (corre al final de la cadena):
+es el del informe. Está enganchado a `main.py` como último paso de la cadena:
 
 ```powershell
 py main.py
 ```
 
-O solo el tablero, si las salidas ya existen:
+`py main.py` corre toda la cadena, **genera `tablero/tablero.html`** (respaldo) e
+imprime `OK cadena completa`, y recién entonces **levanta el tablero en vivo con
+Streamlit** (si está instalado). Variantes:
 
-```powershell
-py tablero/generar_tablero.py
-```
+- `py main.py --sin-tablero` → corre la cadena y genera el HTML, pero **no** levanta
+  Streamlit (útil para verificar que la cadena corre de cero sin dejar un servidor
+  abierto).
+- `py tablero/generar_tablero.py` → regenera solo el `tablero.html`, si las salidas
+  de la cadena ya existen.
+
+Si Streamlit no está instalado, `main.py` lo informa y termina igual con éxito; el
+`tablero.html` ya quedó generado como respaldo.
 
 ## Selectores
 
