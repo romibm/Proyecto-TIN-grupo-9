@@ -273,6 +273,7 @@ def main():
         'graficos_fcr.py',
         'graficos_mortalidad.py',
         'graficos_basal.py',
+        'tablero/generar_tablero.py',
     )
 
     try:
