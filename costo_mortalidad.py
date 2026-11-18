@@ -3,6 +3,7 @@ Usa SOLO las salidas de main.py (output_persona1) y limpieza_externas.py (output
 import sqlite3
 from pathlib import Path
 import pandas as pd
+from capa_semantica import calcular_fcr
 
 CARPETA = Path(__file__).resolve().parent
 SALIDA = CARPETA / 'output_costo'
@@ -39,15 +40,46 @@ op['muertes_esperadas'] = op.tasa_basal * op.poblacion
 op['exceso_n'] = (op.mortalidad_n - op.muertes_esperadas).where(op.en_evento, 0)
 op['exceso_kg'] = op.exceso_n * op.peso_kg
 
+def fcr_bruto_grupo(g):
+    """Obtiene el FCR bruto de un grupo mediante la definición común."""
+    resultado = calcular_fcr(
+        g.alimento_kg.sum(),
+        g.crecimiento_kg.sum(),
+        g.muertos_kg.sum(),
+    )
+    return resultado["fcr_bruto"]
+
+
 def resumen(g):
-    A, G, M, C = g.alimento_kg.sum(), g.crecimiento_kg.sum(), g.muertos_kg.sum(), g.costo_clp.sum()
-    return pd.Series({'alimento_kg': A, 'crecimiento_bruto_kg': G, 'mortalidad_n': g.mortalidad_n.sum(),
-                      'mortalidad_kg': M, 'crecimiento_neto_kg': G - M,
-                      'tasa_mortalidad_diaria_pct': 100 * g.mortalidad_n.sum() / g.poblacion.sum(),
-                      'exceso_mortalidad_n': g.exceso_n.sum(), 'exceso_mortalidad_kg': g.exceso_kg.sum(),
-                      'fcr_bruto': A / G, 'fcr_neto': A / (G - M) if G > M else float('nan'),
-                      'costo_alimento_mm_clp': C / 1e6,
-                      'costo_kg_bruto_clp': C / G, 'costo_kg_neto_clp': C / (G - M) if G > M else float('nan')})
+    A = g.alimento_kg.sum()
+    G = g.crecimiento_kg.sum()
+    M = g.muertos_kg.sum()
+    C = g.costo_clp.sum()
+
+    fcr = calcular_fcr(A, G, M)
+    neto = fcr["fcr_neto_estimado"]
+
+    return pd.Series({
+        "alimento_kg": A,
+        "crecimiento_bruto_kg": G,
+        "mortalidad_n": g.mortalidad_n.sum(),
+        "mortalidad_kg": M,
+        "crecimiento_neto_kg": G - M,
+        "tasa_mortalidad_diaria_pct": (
+            100 * g.mortalidad_n.sum() / g.poblacion.sum()
+        ),
+        "exceso_mortalidad_n": g.exceso_n.sum(),
+        "exceso_mortalidad_kg": g.exceso_kg.sum(),
+        "fcr_bruto": fcr["fcr_bruto"],
+        "fcr_neto_estimado": (
+            neto if neto is not None else float("nan")
+        ),
+        "costo_alimento_mm_clp": C / 1e6,
+        "costo_kg_bruto_clp": C / G,
+        "costo_kg_neto_clp": (
+            C / (G - M) if G > M else float("nan")
+        ),
+    })
 
 por_centro = op.groupby('centro_id').apply(resumen).reset_index().merge(cen, on='centro_id')
 top = int(por_centro.sort_values('costo_kg_bruto_clp').centro_id.iloc[-1])
@@ -75,13 +107,17 @@ imp = {
     'B_alimento_en_peces_muertos_por_evento_clp': r.exceso_mortalidad_kg * r.fcr_bruto * precio_pagado,
     'brecha_costo_kg_bruto_clp': r.costo_kg_bruto_clp - resto.costo_kg_bruto_clp,
     'brecha_costo_kg_neto_clp': r.costo_kg_neto_clp - resto.costo_kg_neto_clp,
-    'fcr_bruto_jaulas_afectadas_en_evento': (lambda g: g.alimento_kg.sum() / g.crecimiento_kg.sum())(T[T.en_evento]),
-    'fcr_bruto_jaulas_afectadas_fuera_evento': (lambda g: g.alimento_kg.sum() / g.crecimiento_kg.sum())(T[afect & ~T.en_evento]),
-    'fcr_bruto_jaulas_no_afectadas': (lambda g: g.alimento_kg.sum() / g.crecimiento_kg.sum())(T[~afect]),
+    'fcr_bruto_jaulas_afectadas_en_evento': fcr_bruto_grupo(T[T.en_evento]),
+    'fcr_bruto_jaulas_afectadas_fuera_evento': fcr_bruto_grupo(T[afect & ~T.en_evento]),
+    'fcr_bruto_jaulas_no_afectadas': fcr_bruto_grupo(T[~afect]),
 }
 imp['A_mas_B_clp'] = imp['A_sobrecosto_por_fcr_clp'] + imp['B_alimento_en_peces_muertos_por_evento_clp']
 imp['parte_mortalidad_en_brecha_neta_clp_kg'] = imp['brecha_costo_kg_neto_clp'] - imp['brecha_costo_kg_bruto_clp']
-especie = op.groupby(['centro_id', 'especie_id']).apply(lambda g: g.alimento_kg.sum() / g.crecimiento_kg.sum()).unstack()
+especie = (
+    op.groupby(["centro_id", "especie_id"])
+    .apply(fcr_bruto_grupo)
+    .unstack()
+)
 
 # verificación: ¿crecimiento_kg es bruto?  biomasa(mañana) - biomasa(hoy) vs crecimiento(mañana) - muertos_kg(hoy)
 s = op.sort_values(['lote_id', 'fecha'])
