@@ -1,13 +1,14 @@
 # AquaFiordo
-`main.py` ejecuta el proceso completo de la Entrega 2, en este orden:
+`main.py` ejecuta el proceso completo en este orden:
 
-1. Limpieza de SQLite mediante la función `clean_sqlite()`.
-2. Limpieza de precios, eventos sanitarios y dólar mediante `limpieza_externas.py`.
-3. Construcción del modelo dimensional y publicación de ambas referencias de mortalidad basal mediante `modelo_semantico.py`.
-4. Cálculo del FCR bruto y neto estimado mediante `metricas_fcr.py`.
-5. Cálculo de costos, mortalidad basal y componentes económicos mediante `costo_mortalidad.py`.
-6. Generación de los cuatro gráficos mediante `graficos_costos.py`, `graficos_fcr.py`, `graficos_mortalidad.py` y `graficos_basal.py`.
-7. Comprobación de los productos y ejecución de los controles del modelo y de la capa semántica.
+1. Limpieza de SQLite mediante `clean_sqlite()`
+2. Limpieza de precios, eventos sanitarios y dólar mediante `limpieza_externas.py`
+3. Preparación del modelo semántico mediante `modelo_semantico.py`
+4. Cálculo del FCR bruto y neto estimado mediante `metricas_fcr.py`
+5. Cálculo de costos y mortalidad basal mediante `costo_mortalidad.py`
+6. Generación de los cuatro gráficos del informe mediante `graficos_costos.py`, `graficos_fcr.py`, `graficos_mortalidad.py` y `graficos_basal.py`
+
+La ejecución incorpora controles de calidad y se detiene ante fallas bloqueantes.
 
 Cada etapa utiliza las salidas de las anteriores. Se realiza una recarga completa, sin acumular registros. Si una etapa o comprobación crítica falla, la ejecución se detiene con código distinto de cero y registra la falla en `output_calidad/ultima_ejecucion.json`.
 
