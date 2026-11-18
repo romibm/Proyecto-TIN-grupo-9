@@ -1,53 +1,102 @@
-"""Costo por kg, FCR bruto/neto, mortalidad basal, exceso por evento e impacto en pesos.
-Usa SOLO las salidas de main.py (output_persona1) y limpieza_externas.py (output_persona2)."""
+"""Costos y mortalidad a partir del modelo dimensional de AquaFiordo."""
 import sqlite3
 from pathlib import Path
 import pandas as pd
+from capa_semantica import (
+    calcular_fcr,
+    leer_operacion,
+    SIN_EVENTO,
+    aplicar_basal,
+    BASAL_PRINCIPAL,
+)
+from contextlib import closing
 
 CARPETA = Path(__file__).resolve().parent
 SALIDA = CARPETA / 'output_costo'
 
-# operación limpia y catálogos
-con = sqlite3.connect(CARPETA / 'output_persona1' / 'datos_sqlite_limpios.sqlite')
-op = pd.read_sql('SELECT * FROM operacion_limpia', con)
-cen = pd.read_sql('SELECT c.centro_id, c.nombre, z.zona FROM centros c LEFT JOIN zonas z USING(zona_id)', con)
-op['fecha'] = pd.to_datetime(op.fecha)
-op['mes'] = op.fecha.dt.month
-op['peso_kg'] = op.biomasa_kg / op.poblacion            
-op['muertos_kg'] = op.mortalidad_n * op.peso_kg
+# Operación y catálogos del modelo dimensional.
+op = leer_operacion(CARPETA)
 
-# precio del mes = promedio de los tipos con precio observado ese mes (no se imputan faltantes)
-pr = pd.read_csv(CARPETA / 'output_persona2' / 'precios_limpios.csv', encoding='utf-8-sig')
-pr['mes'] = pr.mes.str[5:].astype(int)
-precio_mes = pr.groupby('mes').precio_clp_kg.mean()
-op['precio_clp_kg'] = op.mes.map(precio_mes)
-op['costo_clp'] = op.alimento_kg * op.precio_clp_kg
+modelo = CARPETA / "output_modelo" / "modelo_analitico.sqlite"
 
-# días en evento sanitario: jaulas afectadas entre fecha_inicio y fecha_fin
-ev = pd.read_csv(CARPETA / 'output_persona2' / 'eventos_limpios.csv', encoding='utf-8-sig')
-op['evento_id'] = None
-for _, e in ev.iterrows():
-    jaulas = [int(j) for j in str(e.jaulas_afectadas).split()]
-    m = (op.centro_id == e.centro_id) & op.jaula_id.isin(jaulas) & op.fecha.between(e.fecha_inicio, e.fecha_fin)
-    op.loc[m, 'evento_id'] = e.evento_id
-op['en_evento'] = op.evento_id.notna()
+with closing(sqlite3.connect(
+    modelo.resolve().as_uri() + "?mode=ro",
+    uri=True,
+)) as conexion:
+    cen = pd.read_sql(
+        """
+        SELECT DISTINCT
+            centro_id,
+            nombre_centro AS nombre,
+            zona
+        FROM dim_ubicacion
+        """,
+        conexion,
+    )
 
-# mortalidad basal por lote (días sin evento) y exceso en días de evento
-b = op[~op.en_evento].groupby('lote_id')[['mortalidad_n', 'poblacion']].sum()
-op['tasa_basal'] = op.lote_id.map(b.mortalidad_n / b.poblacion)
-op['muertes_esperadas'] = op.tasa_basal * op.poblacion
-op['exceso_n'] = (op.mortalidad_n - op.muertes_esperadas).where(op.en_evento, 0)
-op['exceso_kg'] = op.exceso_n * op.peso_kg
+    ev = pd.read_sql(
+        """
+        SELECT
+            e.*,
+            c.nombre_centro AS centro
+        FROM dim_evento AS e
+        JOIN (
+            SELECT DISTINCT centro_id, nombre_centro
+            FROM dim_ubicacion
+        ) AS c
+            ON c.centro_id = e.centro_id
+        WHERE e.evento_id <> ?
+        """,
+        conexion,
+        params=[SIN_EVENTO],
+    )
+
+precio_mes = op.groupby("mes")["precio_clp_kg"].first()
+
+# Referencia principal definida en la capa semántica.
+op = aplicar_basal(op, ev, BASAL_PRINCIPAL)
+
+
+def fcr_bruto_grupo(g):
+    """Obtiene el FCR bruto de un grupo mediante la definición común."""
+    resultado = calcular_fcr(
+        g.alimento_kg.sum(),
+        g.crecimiento_kg.sum(),
+        g.muertos_kg.sum(),
+    )
+    return resultado["fcr_bruto"]
+
 
 def resumen(g):
-    A, G, M, C = g.alimento_kg.sum(), g.crecimiento_kg.sum(), g.muertos_kg.sum(), g.costo_clp.sum()
-    return pd.Series({'alimento_kg': A, 'crecimiento_bruto_kg': G, 'mortalidad_n': g.mortalidad_n.sum(),
-                      'mortalidad_kg': M, 'crecimiento_neto_kg': G - M,
-                      'tasa_mortalidad_diaria_pct': 100 * g.mortalidad_n.sum() / g.poblacion.sum(),
-                      'exceso_mortalidad_n': g.exceso_n.sum(), 'exceso_mortalidad_kg': g.exceso_kg.sum(),
-                      'fcr_bruto': A / G, 'fcr_neto': A / (G - M) if G > M else float('nan'),
-                      'costo_alimento_mm_clp': C / 1e6,
-                      'costo_kg_bruto_clp': C / G, 'costo_kg_neto_clp': C / (G - M) if G > M else float('nan')})
+    A = g.alimento_kg.sum()
+    G = g.crecimiento_kg.sum()
+    M = g.muertos_kg.sum()
+    C = g.costo_clp.sum()
+
+    fcr = calcular_fcr(A, G, M)
+    neto = fcr["fcr_neto_estimado"]
+
+    return pd.Series({
+        "alimento_kg": A,
+        "crecimiento_bruto_kg": G,
+        "mortalidad_n": g.mortalidad_n.sum(),
+        "mortalidad_kg": M,
+        "crecimiento_neto_kg": G - M,
+        "tasa_mortalidad_diaria_pct": (
+            100 * g.mortalidad_n.sum() / g.poblacion.sum()
+        ),
+        "exceso_mortalidad_n": g.exceso_n.sum(),
+        "exceso_mortalidad_kg": g.exceso_kg.sum(),
+        "fcr_bruto": fcr["fcr_bruto"],
+        "fcr_neto_estimado": (
+            neto if neto is not None else float("nan")
+        ),
+        "costo_alimento_mm_clp": C / 1e6,
+        "costo_kg_bruto_clp": C / G,
+        "costo_kg_neto_clp": (
+            C / (G - M) if G > M else float("nan")
+        ),
+    })
 
 por_centro = op.groupby('centro_id').apply(resumen).reset_index().merge(cen, on='centro_id')
 top = int(por_centro.sort_values('costo_kg_bruto_clp').centro_id.iloc[-1])
@@ -75,13 +124,17 @@ imp = {
     'B_alimento_en_peces_muertos_por_evento_clp': r.exceso_mortalidad_kg * r.fcr_bruto * precio_pagado,
     'brecha_costo_kg_bruto_clp': r.costo_kg_bruto_clp - resto.costo_kg_bruto_clp,
     'brecha_costo_kg_neto_clp': r.costo_kg_neto_clp - resto.costo_kg_neto_clp,
-    'fcr_bruto_jaulas_afectadas_en_evento': (lambda g: g.alimento_kg.sum() / g.crecimiento_kg.sum())(T[T.en_evento]),
-    'fcr_bruto_jaulas_afectadas_fuera_evento': (lambda g: g.alimento_kg.sum() / g.crecimiento_kg.sum())(T[afect & ~T.en_evento]),
-    'fcr_bruto_jaulas_no_afectadas': (lambda g: g.alimento_kg.sum() / g.crecimiento_kg.sum())(T[~afect]),
+    'fcr_bruto_jaulas_afectadas_en_evento': fcr_bruto_grupo(T[T.en_evento]),
+    'fcr_bruto_jaulas_afectadas_fuera_evento': fcr_bruto_grupo(T[afect & ~T.en_evento]),
+    'fcr_bruto_jaulas_no_afectadas': fcr_bruto_grupo(T[~afect]),
 }
 imp['A_mas_B_clp'] = imp['A_sobrecosto_por_fcr_clp'] + imp['B_alimento_en_peces_muertos_por_evento_clp']
 imp['parte_mortalidad_en_brecha_neta_clp_kg'] = imp['brecha_costo_kg_neto_clp'] - imp['brecha_costo_kg_bruto_clp']
-especie = op.groupby(['centro_id', 'especie_id']).apply(lambda g: g.alimento_kg.sum() / g.crecimiento_kg.sum()).unstack()
+especie = (
+    op.groupby(["centro_id", "especie_id"])
+    .apply(fcr_bruto_grupo)
+    .unstack()
+)
 
 # verificación: ¿crecimiento_kg es bruto?  biomasa(mañana) - biomasa(hoy) vs crecimiento(mañana) - muertos_kg(hoy)
 s = op.sort_values(['lote_id', 'fecha'])
@@ -98,6 +151,52 @@ with pd.ExcelWriter(SALIDA / 'costo_mortalidad.xlsx') as w:
     pd.Series(imp).rename('valor').to_frame().to_excel(w, sheet_name='impacto')
     especie.round(3).to_excel(w, sheet_name='fcr_por_especie')
     precio_mes.rename('precio_promedio_clp_kg').to_excel(w, sheet_name='precio_mes')
+# Componentes económicos para comparar ambas referencias basales.
+carpeta_modelo = CARPETA / "output_modelo"
+
+basales = pd.read_csv(
+    carpeta_modelo / "basales_eventos.csv"
+)
+
+componentes = basales[
+    basales["centro_id"].eq(top)
+].copy()
+
+componentes["precio_medio_pagado_clp_kg"] = precio_pagado
+componentes["fcr_centro"] = r.fcr_bruto
+componentes["fcr_referencia_resto"] = resto.fcr_bruto
+
+componentes["A_fcr_clp"] = imp["A_sobrecosto_por_fcr_clp"]
+
+componentes["B_exceso_clp"] = (
+    componentes["exceso_kg"]
+    * r.fcr_bruto
+    * precio_pagado
+)
+
+componentes["basal_evento_clp"] = (
+    componentes["biomasa_basal_kg"]
+    * r.fcr_bruto
+    * precio_pagado
+)
+
+componentes["traslape_estimado_clp"] = (
+    componentes["exceso_kg"]
+    * (r.fcr_bruto - resto.fcr_bruto)
+    * precio_pagado
+)
+
+componentes["union_A_B_clp"] = (
+    componentes["A_fcr_clp"]
+    + componentes["B_exceso_clp"]
+    - componentes["traslape_estimado_clp"]
+)
+
+componentes.to_csv(
+    carpeta_modelo / "componentes_costos.csv",
+    index=False,
+    encoding="utf-8-sig",
+)
 print('OK costo y mortalidad. Centro top:', top)
 if __name__ == '__main__':
     pd.set_option('display.width', 250); pd.set_option('display.float_format', lambda v: f'{v:,.3f}')

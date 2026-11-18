@@ -1,4 +1,4 @@
-﻿centro_id,alimento_kg,crecimiento_bruto_kg,mortalidad_n,mortalidad_kg,crecimiento_neto_kg,tasa_mortalidad_diaria_pct,exceso_mortalidad_n,exceso_mortalidad_kg,fcr_bruto,fcr_neto,costo_alimento_mm_clp,costo_kg_bruto_clp,costo_kg_neto_clp,nombre,zona
+﻿centro_id,alimento_kg,crecimiento_bruto_kg,mortalidad_n,mortalidad_kg,crecimiento_neto_kg,tasa_mortalidad_diaria_pct,exceso_mortalidad_n,exceso_mortalidad_kg,fcr_bruto,fcr_neto_estimado,costo_alimento_mm_clp,costo_kg_bruto_clp,costo_kg_neto_clp,nombre,zona
 7,1887911,1217257,102519,275339.005,941917.995,0.087,39121.537,114199.242,1.551,2.004,2120.258,1741.832,2251,Centro Skyring,Magallanes
 2,1848149,1431152,43402,107558.48,1323593.52,0.039,-27.175,-58.605,1.291,1.396,2073.247,1448.656,1566.377,Centro Calbuco,Los Lagos
 1,1843488,1465566,44515,120645.619,1344920.381,0.039,0,0,1.258,1.371,2080.166,1419.36,1546.683,Centro Reloncaví,Los Lagos

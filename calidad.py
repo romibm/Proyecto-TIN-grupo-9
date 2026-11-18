@@ -253,7 +253,9 @@ class QualityReport:
         """enumera únicamente los productos que la cadena actual genera"""
         required = ['output_persona1/datos_sqlite_limpios.sqlite', 'output_persona2/precios_limpios.csv',
                     'output_persona2/eventos_limpios.csv', 'output_persona2/cobertura.txt',
-                    'output_persona3/fcr_por_centro.csv', 'output_costo/costo_mortalidad.xlsx']
+                    'output_persona3/fcr_por_centro.csv', 'output_costo/costo_mortalidad.xlsx',
+                    'output_modelo/modelo_analitico.sqlite', 'output_modelo/basales_eventos.csv',
+                    'output_modelo/basales_por_lote.csv', 'output_modelo/componentes_costos.csv',]
         for stem in ('01_costo_alimento_por_centro', '02_fcr_bruto_vs_neto',
                      '03_mortalidad_diaria_EV-8001', '04_mortalidad_vs_basal_EV-8001'):
             required.append('output_persona5/' + stem + '.png')
@@ -281,3 +283,9 @@ class QualityReport:
         missing = [name for name in required if not (self.project_folder / name).is_file()
                    or (self.project_folder / name).stat().st_size == 0]
         self.check('salidas_requeridas', not missing, f'ausentes o vacías: {missing}')
+   
+    def semantic_checks(self):
+        """Registra los controles del modelo y sus métricas."""
+        from pruebas_semantica import comprobar_modelo
+
+        comprobar_modelo(self.project_folder, self.check)

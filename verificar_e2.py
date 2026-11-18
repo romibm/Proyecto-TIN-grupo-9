@@ -25,10 +25,58 @@ def data_snapshot(project_folder):
             result['sqlite/' + name] = sorted(connection.execute('SELECT * FROM "' + name + '"').fetchall(), key=repr)
         count, distinct = connection.execute('SELECT COUNT(*), COUNT(DISTINCT fecha || char(0) || centro_id || char(0) || jaula_id || char(0) || lote_id) FROM operacion_limpia').fetchone()
         assert count == distinct, 'Aparecieron claves duplicadas'
-    for output_folder in ('output_persona2', 'output_persona3', 'output_persona5'):
-        for nombre_archivo_path in sorted((project_folder / output_folder).glob('*.csv')):
-            with nombre_archivo_path.open(encoding='utf-8-sig', newline='') as stream:
-                result[nombre_archivo_path.relative_to(project_folder).as_posix()] = list(csv.reader(stream))
+    modelo_path = (
+        project_folder
+        / "output_modelo"
+        / "modelo_analitico.sqlite"
+    )
+
+    with closing(sqlite3.connect(
+        modelo_path.resolve().as_uri() + "?mode=ro",
+        uri=True,
+    )) as connection:
+        names = [
+            row[0]
+            for row in connection.execute(
+                """
+                SELECT name
+                FROM sqlite_master
+                WHERE type = 'table'
+                ORDER BY name
+                """
+            )
+        ]
+
+        for name in names:
+            result["modelo/" + name] = sorted(
+                connection.execute(
+                    'SELECT * FROM "' + name + '"'
+                ).fetchall(),
+                key=repr,
+            )
+
+        assert not connection.execute(
+            "PRAGMA foreign_key_check"
+        ).fetchall(), "Hay referencias inválidas en el modelo"
+    for output_folder in (
+        "output_persona2",
+        "output_persona3",
+        "output_persona5",
+        "output_modelo",
+    ):
+        for nombre_archivo_path in sorted(
+            (project_folder / output_folder).glob("*.csv")
+        ):
+            with nombre_archivo_path.open(
+                encoding="utf-8-sig",
+                newline="",
+            ) as stream:
+                ruta_relativa = (
+                    nombre_archivo_path
+                    .relative_to(project_folder)
+                    .as_posix()
+                )
+                result[ruta_relativa] = list(csv.reader(stream))
     costo_mortalidad_path = project_folder / 'output_costo' / 'costo_mortalidad.xlsx'
     workbook = load_workbook(costo_mortalidad_path, read_only=True, data_only=True)
     try:

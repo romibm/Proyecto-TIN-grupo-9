@@ -1,12 +1,13 @@
 # AquaFiordo
+`main.py` ejecuta el proceso completo de la Entrega 2, en este orden:
 
-`main.py` ejecuta el proceso completo de la Entrega 1, en este orden:
-
-1. Limpieza de SQLite mediante la función `clean_sqlite()`
-2. Limpieza de precios, eventos sanitarios y dólar mediante `limpieza_externas.py`
-3. Cálculo del FCR bruto y neto estimado mediante `metricas_fcr.py`
-4. Cálculo de costos y mortalidad basal mediante `costo_mortalidad.py`
-5. Generación de los cuatro gráficos del informe mediante `graficos_costos.py`, `graficos_fcr.py`, `graficos_mortalidad.py` y `graficos_basal.py`
+1. Limpieza de SQLite mediante la función `clean_sqlite()`.
+2. Limpieza de precios, eventos sanitarios y dólar mediante `limpieza_externas.py`.
+3. Construcción del modelo dimensional y publicación de ambas referencias de mortalidad basal mediante `modelo_semantico.py`.
+4. Cálculo del FCR bruto y neto estimado mediante `metricas_fcr.py`.
+5. Cálculo de costos, mortalidad basal y componentes económicos mediante `costo_mortalidad.py`.
+6. Generación de los cuatro gráficos mediante `graficos_costos.py`, `graficos_fcr.py`, `graficos_mortalidad.py` y `graficos_basal.py`.
+7. Comprobación de los productos y ejecución de los controles del modelo y de la capa semántica.
 
 Cada etapa utiliza las salidas de las anteriores. Se realiza una recarga completa, sin acumular registros. Si una etapa o comprobación crítica falla, la ejecución se detiene con código distinto de cero y registra la falla en `output_calidad/ultima_ejecucion.json`.
 
@@ -14,21 +15,16 @@ Las fuentes originales se conservan intactas.
 
 ## Requisitos e instalación
 
-Se necesita Python 3.10 o superior. El proceso fue verificado con Python 3.12.10 y las versiones exactas de `requirements.txt`, ya instaladas, sin añadir dependencias.
+Se utiliza Python 3.12.x y las versiones de `requirements.txt`. La ejecución local de E2 fue verificada con Python 3.12.16.
 
-Desde la carpeta que contiene `main.py`, instalar las dependencias una vez por entorno.
-
-En Windows:
-
-```powershell
-py -m pip install -r requirements.txt
-```
-
-En Linux o macOS:
+Utilizar un entorno virtual creado con Python 3.12. Con el entorno activado, comprobar la versión e instalar las dependencias:
 
 ```bash
-python3 -m pip install -r requirements.txt
+python --version
+python -m pip install -r requirements.txt
 ```
+
+Los comandos siguientes deben ejecutarse dentro de ese entorno virtual.
 
 ## Fuentes necesarias
 
@@ -56,7 +52,7 @@ py main.py
 En Linux o macOS:
 
 ```bash
-python3 main.py
+python main.py
 ```
 
 Este comando ejecuta la limpieza, los cálculos y los gráficos. No es necesario ejecutar los demás scripts por separado.
@@ -81,6 +77,7 @@ SQLite, precios y eventos son esenciales: si faltan o invalidan los cálculos, s
 | `output_costo/` | Excel con costos, mortalidad basal y valoraciones económicas |
 | `output_persona5/` | Cuatro gráficos del informe, sus datos e interpretaciones |
 | `output_calidad/` | `ultima_ejecucion.json`: fecha UTC, estado, fuentes, conteos, comprobaciones y fallas; `verificacion_e2.json`: evidencia de las pruebas controladas |
+| `output_modelo/` | `modelo_analitico.sqlite`: tabla de hechos y cinco dimensiones; `basales_eventos.csv` y `basales_por_lote.csv`: ambas referencias de basal; `componentes_costos.csv`: valoraciones y traslape estimado |
 
 Con los archivos incluidos se esperan:
 
@@ -88,6 +85,8 @@ Con los archivos incluidos se esperan:
 - 33 precios válidos y cuatro eventos sanitarios válidos
 - 248 observaciones del dólar al utilizar la respuesta guardada
 - FCR bruto y neto estimado para siete centros
+
+El modelo dimensional contiene 13.157 hechos, 365 fechas, 42 ubicaciones, 42 lotes, tres especies y cinco miembros de evento sanitario, incluido `SIN_EVENTO`. El resumen de basales contiene ocho combinaciones evento/referencia y el detalle contiene veinte combinaciones evento/lote/referencia.
 
 Al finalizar aparece:
 
@@ -97,11 +96,9 @@ OK cadena completa, resultados y gráficos generados
 
 Con las entradas incluidas, el estado esperado es `ok_con_advertencias`: existen exclusiones acordadas, tres combinaciones tipo-mes sin precio y un neto mensual no definido. El mensaje de éxito solo aparece después de completar las etapas y comprobar las salidas necesarias.
 
-La última recarga verificada en copia temporal tardó aproximadamente 8 segundos, sin red y con las dependencias instaladas. La duración depende del equipo; no incluye instalación.
+La ejecución local registra 62 controles: 55 satisfechos, siete advertencias y ningún error bloqueante. Incluye diez controles de la capa semántica; uno de ellos ejecuta cinco pruebas de propiedades sobre las fórmulas, los denominadores, las basales y la asignación de eventos.
 
-También se comprobó una instalación de `requirements.txt` en un entorno virtual nuevo y una ejecución de `main.py` en otra copia sin salidas previas, con código 0. La evidencia adicional está en `verificacion_e2.json`, apartado `instalacion_limpia`. Un informe heredado de la implementación anterior marcado como temporal no acredita ejecución local; se conserva intacto hasta ejecutar `main.py` localmente.
-
-Para repetir las pruebas de P1: `py verificar_e2.py` (o `python3 verificar_e2.py`). Usa una copia temporal sin outputs previos, comprueba repetibilidad entre ejecuciones nuevas y ausencia de duplicados; no compara con una referencia anterior de E1. Simula fallas de fuente/API sin modificar la captura original. El modo normal y la etapa omitida prohíben consultas a la API; solo los escenarios de actualización solicitan esa opción y simulan la respuesta o el error. Guarda el informe temporal y los escenarios exclusivamente en `output_calidad/verificacion_e2.json`, con su procedencia. No crea ni reemplaza `ultima_ejecucion.json`, reservado a `main.py` sobre el proyecto local. No reinstala dependencias. Arquitectura, diagrama, linaje y objetivos de servicio propuestos: [ARQUITECTURA_E2.md](ARQUITECTURA_E2.md).
+Para repetir la verificación de reproducibilidad, ejecutar `python verificar_e2.py`. El verificador utiliza copias temporales sin salidas previas, comprueba que las recargas no acumulen duplicados y compara los datos de las tablas SQLite, los CSV y las celdas Excel. También comprueba el comportamiento ante fallas de fuentes y de la API, sin modificar la captura original ni el informe local de `main.py`. Registra la evidencia en `output_calidad/verificacion_e2.json`. Utiliza las dependencias del entorno activo; no las reinstala. Arquitectura, diagrama, linaje y objetivos de servicio propuestos: [ARQUITECTURA_E2.md](ARQUITECTURA_E2.md).
 
 Los criterios y supuestos se documentan en `DECISIONES_SQLITE.md`, `DECISIONES_EXTERNAS.md` y `FICHA_FCR.md`.
 
@@ -186,7 +183,7 @@ Además, hay precio válido en 33 de las 36 combinaciones de tipo de alimento y 
 
 # Parte 3 — FCR bruto y neto estimado
 
-`metricas_fcr.py` utiliza las tablas `operacion_limpia` y `centros` de `output_persona1/datos_sqlite_limpios.sqlite`. Calcula los resultados por centro para las observaciones conservadas de 2025.
+`metricas_fcr.py` utiliza `fact_operacion` y `dim_ubicacion` de `output_modelo/modelo_analitico.sqlite`. Calcula los resultados por centro para las observaciones conservadas de 2025 mediante la función compartida `calcular_fcr()` de `capa_semantica.py`, utilizada también por los cálculos de costos.
 
 ## Trabajo realizado
 
@@ -215,11 +212,14 @@ No se excluyen filas adicionales en este cálculo. Se verificó que los resultad
 
 # Parte 4 — Costo por kg, mortalidad basal e impacto en pesos
 
-`costo_mortalidad.py` usa `operacion_limpia` (paso 1) y `precios_limpios.csv` y `eventos_limpios.csv` (paso 2).
+`costo_mortalidad.py` lee la operación preparada desde `output_modelo/modelo_analitico.sqlite`. Utiliza las funciones compartidas de `capa_semantica.py` para calcular el FCR y aplicar la mortalidad basal.
 
-- Costo por kg = Σ(alimento_kg × precio del mes) ÷ Σ crecimiento_kg. El precio del mes es el promedio de los tipos con precio observado ese mes (no se imputan faltantes).
-- Mortalidad basal por lote = muertes ÷ población en días sin evento. Exceso = muertes observadas en días de evento − tasa basal × población.
-- Impacto en pesos = alimento extra por FCR peor + alimento invertido en peces muertos por el evento, al precio medio pagado.
+- Costo por kg bruto: suma del costo de alimento dividida por la suma del crecimiento bruto. El precio mensual es el promedio simple de los tipos de alimento con precio disponible, sin imputar faltantes.
+- Basal principal (`lote_sin_evento`): muertes divididas por la suma de población en las observaciones sin evento de cada lote.
+- Basal alternativa (`lote_previa_evento`): la misma tasa, utilizando únicamente observaciones sin evento anteriores al inicio del evento analizado.
+- Exceso: mortalidad observada durante el evento menos mortalidad esperada según la referencia elegida. Se conservan los valores negativos.
+- Las referencias basales se calculan con el historial depurado de 2025 antes de aplicar filtros de visualización.
+- Los componentes económicos se publican para ambas basales en `output_modelo/componentes_costos.csv`. Las valoraciones A y B no se suman directamente: el archivo incluye el traslape estimado y la unión `A + B − traslape`. Esta unión no constituye por sí sola una atribución causal del sobrecosto ni un ahorro recuperable.
 
 Genera `output_costo/costo_mortalidad.xlsx`. Durante esta etapa aparece:
 
