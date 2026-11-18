@@ -266,6 +266,7 @@ def main():
     report = QualityReport(project_folder)
     script_names = (
         'limpieza_externas.py',
+        'modelo_semantico.py',
         'metricas_fcr.py',
         'costo_mortalidad.py',
         'graficos_costos.py',

@@ -1,37 +1,51 @@
-"""Costo por kg, FCR bruto/neto, mortalidad basal, exceso por evento e impacto en pesos.
-Usa SOLO las salidas de main.py (output_persona1) y limpieza_externas.py (output_persona2)."""
+"""Costos y mortalidad a partir del modelo dimensional de AquaFiordo."""
 import sqlite3
 from pathlib import Path
 import pandas as pd
-from capa_semantica import calcular_fcr
+from capa_semantica import calcular_fcr, leer_operacion, SIN_EVENTO
+from contextlib import closing
 
 CARPETA = Path(__file__).resolve().parent
 SALIDA = CARPETA / 'output_costo'
 
-# operación limpia y catálogos
-con = sqlite3.connect(CARPETA / 'output_persona1' / 'datos_sqlite_limpios.sqlite')
-op = pd.read_sql('SELECT * FROM operacion_limpia', con)
-cen = pd.read_sql('SELECT c.centro_id, c.nombre, z.zona FROM centros c LEFT JOIN zonas z USING(zona_id)', con)
-op['fecha'] = pd.to_datetime(op.fecha)
-op['mes'] = op.fecha.dt.month
-op['peso_kg'] = op.biomasa_kg / op.poblacion            
-op['muertos_kg'] = op.mortalidad_n * op.peso_kg
+# Operación y catálogos del modelo dimensional.
+op = leer_operacion(CARPETA)
 
-# precio del mes = promedio de los tipos con precio observado ese mes (no se imputan faltantes)
-pr = pd.read_csv(CARPETA / 'output_persona2' / 'precios_limpios.csv', encoding='utf-8-sig')
-pr['mes'] = pr.mes.str[5:].astype(int)
-precio_mes = pr.groupby('mes').precio_clp_kg.mean()
-op['precio_clp_kg'] = op.mes.map(precio_mes)
-op['costo_clp'] = op.alimento_kg * op.precio_clp_kg
+modelo = CARPETA / "output_modelo" / "modelo_analitico.sqlite"
 
-# días en evento sanitario: jaulas afectadas entre fecha_inicio y fecha_fin
-ev = pd.read_csv(CARPETA / 'output_persona2' / 'eventos_limpios.csv', encoding='utf-8-sig')
-op['evento_id'] = None
-for _, e in ev.iterrows():
-    jaulas = [int(j) for j in str(e.jaulas_afectadas).split()]
-    m = (op.centro_id == e.centro_id) & op.jaula_id.isin(jaulas) & op.fecha.between(e.fecha_inicio, e.fecha_fin)
-    op.loc[m, 'evento_id'] = e.evento_id
-op['en_evento'] = op.evento_id.notna()
+with closing(sqlite3.connect(
+    modelo.resolve().as_uri() + "?mode=ro",
+    uri=True,
+)) as conexion:
+    cen = pd.read_sql(
+        """
+        SELECT DISTINCT
+            centro_id,
+            nombre_centro AS nombre,
+            zona
+        FROM dim_ubicacion
+        """,
+        conexion,
+    )
+
+    ev = pd.read_sql(
+        """
+        SELECT
+            e.*,
+            c.nombre_centro AS centro
+        FROM dim_evento AS e
+        JOIN (
+            SELECT DISTINCT centro_id, nombre_centro
+            FROM dim_ubicacion
+        ) AS c
+            ON c.centro_id = e.centro_id
+        WHERE e.evento_id <> ?
+        """,
+        conexion,
+        params=[SIN_EVENTO],
+    )
+
+precio_mes = op.groupby("mes")["precio_clp_kg"].first()
 
 # mortalidad basal por lote (días sin evento) y exceso en días de evento
 b = op[~op.en_evento].groupby('lote_id')[['mortalidad_n', 'poblacion']].sum()
