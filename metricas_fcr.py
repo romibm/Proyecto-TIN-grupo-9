@@ -73,8 +73,20 @@ def main():
             )
 
         row.update(resultados_fcr)
-    with fcr_por_centro_path.open('w', encoding='utf-8-sig', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=list(rows[0]))
+    fcr_por_centro_path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    with fcr_por_centro_path.open(
+        "w",
+        encoding="utf-8-sig",
+        newline="",
+    ) as file:
+        writer = csv.DictWriter(
+            file,
+            fieldnames=list(rows[0]),
+        )
         writer.writeheader()
         writer.writerows(rows)
     print(f'OK FCR bruto y neto estimado: {len(rows)} centros')
