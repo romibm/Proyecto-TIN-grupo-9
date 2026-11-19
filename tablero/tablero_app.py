@@ -69,13 +69,16 @@ with k1:
     st.subheader(f"Costo de alimento del centro · {modo_lbl.lower()}")
     st.metric(label=f"{centro['nombre']} (CLP/kg)", value=clp(ck),
               delta=f"+{pct1(100*(ck/cr-1))}% vs. resto ({clp(cr)} CLP/kg)", delta_color="inverse")
+    otro_txt = "neto estimado" if modo == "bruto" else "bruto"
+    otro = "neto" if modo == "bruto" else "bruto"
+    st.caption(f"Con FCR {otro_txt}: {clp(costo_kg(centro, otro))} CLP/kg")
     cob = meta["cobertura"]
     nota = (f" · precio válido en {cob['validas']}/{cob['total']} combinaciones tipo-mes "
             f"({pct1(cob['pct'])}%)") if cob else ""
     st.caption(f"Cobertura: 7/7 centros, {meta['periodo'].lower()}{nota}")
 
 with k2:
-    st.subheader("Sobrecosto anual del centro crítico · reparto por causa")
+    st.subheader(f"Sobrecosto anual de {critico['nombre']} · reparto por causa")
     st.metric(label=f"Unión A∪B · total atribuido a {critico['nombre']}", value=f"{mm(basal['union'])} / año")
     st.markdown(
         f"- **A · Sobrecosto por peor FCR:** {mm(basal['A'])}\n"
@@ -83,6 +86,9 @@ with k2:
         f"- **− Traslape (alimento contado en A y en B):** −{mm(basal['traslape'])}\n"
         f"- **= Unión A∪B:** {mm(basal['union'])}"
     )
+    st.caption("El traslape es el alimento ya contado en A y en B; se resta para no sumarlo dos veces. "
+               "MM = millones de pesos. Ambas referencias basales dan casi el mismo resultado: "
+               "el exceso es robusto a la basal.")
 
 st.subheader(f"Costo de alimento por kg y centro ({modo_lbl.lower()})")
 df = pd.DataFrame([{
@@ -105,7 +111,7 @@ st.subheader("Detalle por centro")
 tabla = pd.DataFrame([{
     "Centro": c["nombre"], "Zona": c["zona"], "Costo/kg (CLP)": round(costo_kg(c, modo)),
     f"FCR {modo}": round(fcr(c, modo), 3), "Mortalidad diaria (%)": round(c["mort_pct"], 3),
-    "Exceso muertes (evento)": round(c["exceso_n"]),
+    "Exceso muertes (evento)": round(basal["exceso_n"]) if c["id"] == critico["id"] else round(c["exceso_n"]),
 } for c in sorted(centros, key=lambda x: costo_kg(x, modo), reverse=True)])
 st.dataframe(tabla, use_container_width=True, hide_index=True)
 
