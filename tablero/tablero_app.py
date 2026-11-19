@@ -1,12 +1,13 @@
-"""Tablero de la Entrega 2 (prototipo, Persona 3) en Streamlit.
-
+"""
 Misma pantalla y datos que tablero/tablero.html, pero servido por Streamlit.
-Reusa construir_datos() de generar_tablero.py (mismo origen que el informe), por
+Reusa construir_datos() de generar_tablero.py, por
 lo que el numero se mantiene y se actualiza al volver a correr la cadena.
 
 Correr desde la raiz del repo:
-    py -m pip install -r tablero/requirements_tablero.txt
+    py -m pip install -r requirements.txt
     py -m streamlit run tablero/tablero_app.py
+    
+Tambien se ejecuta al final de  python main.py
 """
 
 import altair as alt

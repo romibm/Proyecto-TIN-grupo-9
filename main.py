@@ -269,7 +269,7 @@ def _abrir_tablero_streamlit(project_folder, omitir):
     if importlib.util.find_spec('streamlit') is None:
         print('Streamlit no esta instalado; se omite el tablero en vivo. '
               f'Respaldo: {respaldo}. '
-              'Instalar con: py -m pip install -r tablero/requirements_tablero.txt')
+              'Instalar con: py -m pip install -r requirements.txt')
         return
     app = project_folder / 'tablero' / 'tablero_app.py'
     print('Abriendo el tablero en Streamlit (Ctrl+C para cerrar)...', flush=True)

@@ -8,7 +8,7 @@ Toda la parte del prototipo vive en esta carpeta `tablero/`.
 
 - `generar_tablero.py` — genera el tablero desde las salidas de la cadena.
 - `tablero.html` — el tablero (archivo autocontenido, doble clic).
-- `tablero_app.py` + `requirements_tablero.txt` — misma pantalla en Streamlit.
+- `tablero_app.py` — misma pantalla en Streamlit (dependencias en el `requirements.txt` principal).
 - `CHECKLIST_CLASE7.md` — verificación de la anatomía (6 líneas).
 - `PRUEBA_DE_USO.md` — protocolo y planilla de la prueba con 2 personas ajenas.
 - `INFORME_seccion_prototipo.md` — sección del prototipo para el Google Doc.
@@ -72,7 +72,7 @@ nada ni internet. Ese archivo **es la copia local** para la sala.
 Reusa la misma lógica de datos. Desde la raíz del repo:
 
 ```powershell
-py -m pip install -r tablero/requirements_tablero.txt
+py -m pip install -r requirements.txt
 py -m streamlit run tablero/tablero_app.py
 ```
 

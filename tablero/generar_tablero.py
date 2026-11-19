@@ -1,9 +1,8 @@
-"""Genera el tablero de la Entrega 2 (prototipo, Persona 3).
+"""Genera tablero html de respaldo
 
-Lee las salidas de la cadena (no datos pegados a mano) y escribe un archivo
-HTML autocontenido en tablero/tablero.html. El numero que muestra la pantalla
-sale de las mismas salidas que alimentan el informe, por lo que al volver a
-correr la cadena el tablero se actualiza.
+Lee las salidas de la cadena y escribe un archivo HTML autocontenido en tablero/tablero.html. 
+El numero que muestra la pantalla sale de las mismas salidas que alimentan el informe, 
+por lo que al volver a correr la cadena el tablero se actualiza.
 
 Fuentes:
   - output_costo/costo_mortalidad.xlsx       (hoja por_centro: costo/kg y FCR por centro; hoja eventos: tipo)

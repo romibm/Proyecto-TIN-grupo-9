@@ -1,16 +1,4 @@
-# Prueba de uso del prototipo — Persona 3 (ítem D / P2)
-
-La cápsula pide probar el tablero con **2 personas que no lo construyeron**, que
-respondan **3 preguntas del caso solas**, y dejar **1 registro de cambios** (quién,
-tiempo, dificultad y ajuste). Lo coordina y ejecuta la Persona 3.
-
-## Cómo tomar la prueba
-
-1. Abre `tablero/tablero.html` (doble clic, sin internet).
-2. Siéntate al lado de la persona ajena, sin ayudarla. Toma el tiempo.
-3. Pídele que responda en voz alta las 3 preguntas usando solo el tablero.
-4. Anota dónde dudó, qué no entendió y cuánto demoró. Repite con una segunda persona.
-5. Haz los ajustes y registra qué cambiaste. **Hazlo antes del miércoles.**
+# Prueba de uso del prototipo — Persona 3
 
 ## Las 3 preguntas del caso
 
