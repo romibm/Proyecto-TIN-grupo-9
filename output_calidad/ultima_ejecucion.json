@@ -1,5 +1,5 @@
 {
-  "fecha": "2026-11-18T01:27:52.737739+00:00",
+  "fecha": "2026-11-18T23:32:38.515481+00:00",
   "estado": "ok_con_advertencias",
   "fuentes": {
     "sqlite": {
@@ -10,12 +10,12 @@
     "precios": {
       "ruta": "archivos/origen_costos_alimento.csv",
       "disponible": true,
-      "sha256": "6335986429a4c8393a71bac628fa08d9a72f5b305a1c09e59fdb395827f1e885"
+      "sha256": "7c59a030ea2b622a74ac46ae51cac9e27a9dbd80a6e0ab7398cc75433204a924"
     },
     "eventos": {
       "ruta": "archivos/origen_eventos_sanitarios.json",
       "disponible": true,
-      "sha256": "cf7dbd7ba6eb01fd739474bc8f4137559e56511d873ab91cecb62311c75c0e3c"
+      "sha256": "28d4f0f4fccfd347804576ab1f9172b6e0815f5d1e9cf2bb7769fe15cf0fa68a"
     },
     "dolar": {
       "ruta": "archivos/dolar_2025_crudo.json",
@@ -472,8 +472,9 @@
     "graficos_costos.py",
     "graficos_fcr.py",
     "graficos_mortalidad.py",
-    "graficos_basal.py"
+    "graficos_basal.py",
+    "tablero/generar_tablero.py"
   ],
-  "duracion_segundos": 11.857,
-  "fin": "2026-11-18T01:28:04.594778+00:00"
+  "duracion_segundos": 28.937,
+  "fin": "2026-11-18T23:33:07.454937+00:00"
 }

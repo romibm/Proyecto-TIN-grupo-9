@@ -58,6 +58,8 @@ python main.py
 
 Este comando ejecuta la limpieza, los cálculos y los gráficos. No es necesario ejecutar los demás scripts por separado.
 
+Como último paso, la cadena genera el prototipo `tablero/tablero.html` y, si Streamlit está instalado, lo abre en el navegador (`localhost:8501`); esa ventana queda corriendo hasta cerrarla con Ctrl+C. Para correr la cadena sin levantar el tablero en vivo —por ejemplo, para verificar la reproducción— usar `py main.py --sin-tablero`: igual se genera el `tablero.html`. Las dependencias del prototipo (`streamlit`, `altair`) ya están en `requirements.txt`, por lo que la instalación inicial las cubre.
+
 Para solicitar una actualización del dólar desde `https://mindicador.cl/api/dolar/2025`:
 
 ```powershell
@@ -79,6 +81,7 @@ SQLite, precios y eventos son esenciales: si faltan o invalidan los cálculos, s
 | `output_persona5/` | Cuatro gráficos del informe, sus datos e interpretaciones |
 | `output_calidad/` | `ultima_ejecucion.json`: fecha UTC, estado, fuentes, conteos, comprobaciones y fallas; `verificacion_e2.json`: evidencia de las pruebas controladas |
 | `output_modelo/` | `modelo_analitico.sqlite`: tabla de hechos y cinco dimensiones; `basales_eventos.csv` y `basales_por_lote.csv`: ambas referencias de basal; `componentes_costos.csv`: valoraciones y traslape estimado |
+| `tablero/` | `tablero.html`: prototipo autocontenido del sobrecosto por centro (se abre con doble clic) |
 
 Con los archivos incluidos se esperan:
 
@@ -95,7 +98,7 @@ Al finalizar aparece:
 OK cadena completa, resultados y gráficos generados
 ```
 
-Con las entradas incluidas, el estado esperado es `ok_con_advertencias`: existen exclusiones acordadas, tres combinaciones tipo-mes sin precio y un neto mensual no definido. El mensaje de éxito solo aparece después de completar las etapas y comprobar las salidas necesarias.
+Con las entradas incluidas, el estado esperado es `ok_con_advertencias`: existen exclusiones acordadas, tres combinaciones tipo-mes sin precio y un neto mensual no definido. El mensaje de éxito solo aparece después de completar las etapas y comprobar las salidas necesarias. Con las dependencias instaladas, la cadena demora del orden de segundos (a lo más algunas decenas, según el equipo); no incluye la instalación ni el servidor de Streamlit, que queda abierto aparte. Tras el mensaje de éxito queda generado `tablero/tablero.html` y, con Streamlit instalado, el tablero se abre en el navegador.
 
 La ejecución local registra 62 controles: 55 satisfechos, siete advertencias y ningún error bloqueante. Incluye diez controles de la capa semántica; uno de ellos ejecuta cinco pruebas de propiedades sobre las fórmulas, los denominadores, las basales y la asignación de eventos.
 
@@ -245,6 +248,25 @@ Se comparan el costo de alimento por centro, el FCR bruto y neto estimado, la ev
 
 Los gráficos de costos y basal utilizan `output_costo/costo_mortalidad.xlsx`, generado por `costo_mortalidad.py`. La referencia basal se calcula por lote con observaciones sin evento; el exceso estimado no demuestra atribución causal.
 
+
+# Parte 6 — Prototipo (tablero)
+
+El prototipo es la capa de consumo: una sola pantalla que responde qué centro concentra el sobrecosto de alimento del año y de dónde viene, para apoyar la decisión de dónde priorizar el control sanitario y de alimentación. Todos sus archivos están en `tablero/`.
+
+## Cómo abrir el prototipo
+
+- **HTML (recomendado para presentar):** doble clic en `tablero/tablero.html`. Es autocontenido: abre en cualquier navegador sin instalar nada ni conexión, y sirve como copia local. Se puede enviar ese único archivo para que otra persona lo use.
+- **Streamlit (en vivo):** se levanta solo al final de `py main.py`, o a mano con `py -m streamlit run tablero/tablero_app.py` (en `localhost:8501`, Ctrl+C para cerrar). No genera archivo: necesita el servidor corriendo.
+
+## Qué muestra
+
+Título con la pregunta y selectores de definición del FCR (bruto / neto estimado), centro y referencia basal. Cifra principal (costo de alimento por kg del centro con su comparación y cobertura), reparto del sobrecosto por causa que suma (A por peor FCR + B por peces muertos del evento − traslape = unión A∪B), gráfico por centro, detalle en tabla y pie con fuente, última actualización y dueño.
+
+## Datos y actualización
+
+Sin datos pegados a mano: `tablero/generar_tablero.py` lee `output_modelo/componentes_costos.csv` (reparto por causa y referencia basal) y `output_costo/costo_mortalidad.xlsx` (costo/kg y FCR por centro), las mismas salidas que alimentan el informe. Al volver a correr la cadena, el tablero se regenera y la "última actualización" se toma del archivo de origen más reciente.
+
+Audiencia: Jefatura de Producción / Gerencia de Operaciones. Frecuencia: mensual. La documentación de apoyo de esta parte (checklist de la clase 7, protocolo de la prueba de uso y la sección del informe) está en `tablero/`.
 
 # Uso de IA
 
