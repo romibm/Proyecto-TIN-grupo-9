@@ -25,6 +25,9 @@
   .cifra{font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1}
   .cifra small{font-size:17px;font-weight:700;color:var(--gris)}
   .comp{margin-top:8px;font-size:14px}
+  .comp-big{font-weight:800;font-size:16px}
+  .otro{color:var(--gris);font-size:12px}
+  .nota-rep{margin-top:10px;font-size:11px;color:var(--gris);border-top:1px dashed var(--linea);padding-top:8px}
   .up{color:var(--rojo);font-weight:700}
   .cobertura{margin-top:10px;font-size:12px;color:var(--gris);border-top:1px dashed var(--linea);padding-top:8px}
   .impacto .big{font-size:28px;font-weight:800;color:var(--rojo)}
@@ -74,9 +77,10 @@
       <div class="cobertura" id="kpi-cob"></div>
     </section>
     <section class="card impacto">
-      <h2>Sobrecosto anual del centro crítico - reparto por causa</h2>
+      <h2 id="imp-h2">Sobrecosto anual · reparto por causa</h2>
       <div class="big" id="imp-total"></div>
       <div class="reparto" id="imp-reparto"></div>
+      <div class="nota-rep" id="imp-nota"></div>
     </section>
     <section class="card full">
       <h2>Costo de alimento por kg y centro (<span id="def-txt2">bruto</span>)</h2>
@@ -96,7 +100,7 @@
   <footer id="footer"></footer>
 </div>
 <script>
-const DATA = {"meta": {"actualizado": "18-11-2026 20:32", "periodo": "Año 2025", "dueno": "Jefatura de Producción / Gerencia de Operaciones", "fuente": "Cadena AquaFiordo - output_modelo/componentes_costos.csv (reparto) y output_costo/costo_mortalidad.xlsx (por_centro)", "cobertura": {"validas": 33, "total": 36, "pct": 91.7}, "generado": "18-11-2026 20:33"}, "critico": {"id": 7, "nombre": "Centro Skyring", "zona": "Magallanes"}, "centros": [{"id": 7, "nombre": "Centro Skyring", "zona": "Magallanes", "costo_kg_bruto": 1741.832, "costo_kg_neto": 2251, "fcr_bruto": 1.551, "fcr_neto": 2.004, "mort_pct": 0.087, "exceso_n": 39121.537}, {"id": 2, "nombre": "Centro Calbuco", "zona": "Los Lagos", "costo_kg_bruto": 1448.656, "costo_kg_neto": 1566.377, "fcr_bruto": 1.291, "fcr_neto": 1.396, "mort_pct": 0.039, "exceso_n": -27.175}, {"id": 1, "nombre": "Centro Reloncaví", "zona": "Los Lagos", "costo_kg_bruto": 1419.36, "costo_kg_neto": 1546.683, "fcr_bruto": 1.258, "fcr_neto": 1.371, "mort_pct": 0.039, "exceso_n": 0}, {"id": 6, "nombre": "Centro Puyuhuapi", "zona": "Aysén", "costo_kg_bruto": 1412.087, "costo_kg_neto": 1524.264, "fcr_bruto": 1.254, "fcr_neto": 1.354, "mort_pct": 0.039, "exceso_n": 0}, {"id": 4, "nombre": "Centro Melinka", "zona": "Aysén", "costo_kg_bruto": 1406.104, "costo_kg_neto": 1523.535, "fcr_bruto": 1.251, "fcr_neto": 1.355, "mort_pct": 0.039, "exceso_n": 16.405}, {"id": 3, "nombre": "Centro Quellón", "zona": "Los Lagos", "costo_kg_bruto": 1396.514, "costo_kg_neto": 1517.603, "fcr_bruto": 1.236, "fcr_neto": 1.344, "mort_pct": 0.04, "exceso_n": 0}, {"id": 5, "nombre": "Centro Cisnes", "zona": "Aysén", "costo_kg_bruto": 1383.048, "costo_kg_neto": 1502.554, "fcr_bruto": 1.225, "fcr_neto": 1.331, "mort_pct": 0.039, "exceso_n": 16.774}], "resto": {"costo_kg_bruto": 1410.707, "costo_kg_neto": 1529.974, "fcr_bruto": 1.252, "fcr_neto": 1.358, "mort_pct": 0.039}, "basales": [{"basal_id": "lote_sin_evento", "nombre": "Basal por lote sin evento", "A": 408228054.9218643, "B": 198915941.6897904, "traslape": 38298678.38798475, "union": 568845318.2236699, "obs": 45862.0, "esperado": 6740.4627103360535, "exceso_n": 39121.537289663946}, {"basal_id": "lote_previa_evento", "nombre": "Basal por lote previa al evento", "A": 408228054.9218643, "B": 198851666.28509015, "traslape": 38286302.99447953, "union": 568793418.212475, "obs": 45862.0, "esperado": 6753.953006514049, "exceso_n": 39108.04699348595}], "evento": {"id": "EV-8001", "tipo": "Caligus", "centro": "Centro Skyring"}};
+const DATA = {"meta": {"actualizado": "19-11-2026 02:12", "periodo": "Año 2025", "dueno": "Jefatura de Producción / Gerencia de Operaciones", "fuente": "Cadena AquaFiordo - output_modelo/componentes_costos.csv (reparto) y output_costo/costo_mortalidad.xlsx (por_centro)", "cobertura": {"validas": 33, "total": 36, "pct": 91.7}, "generado": "19-11-2026 02:38"}, "critico": {"id": 7, "nombre": "Centro Skyring", "zona": "Magallanes"}, "centros": [{"id": 7, "nombre": "Centro Skyring", "zona": "Magallanes", "costo_kg_bruto": 1741.832, "costo_kg_neto": 2251, "fcr_bruto": 1.551, "fcr_neto": 2.004, "mort_pct": 0.087, "exceso_n": 39121.537}, {"id": 2, "nombre": "Centro Calbuco", "zona": "Los Lagos", "costo_kg_bruto": 1448.656, "costo_kg_neto": 1566.377, "fcr_bruto": 1.291, "fcr_neto": 1.396, "mort_pct": 0.039, "exceso_n": -27.175}, {"id": 1, "nombre": "Centro Reloncaví", "zona": "Los Lagos", "costo_kg_bruto": 1419.36, "costo_kg_neto": 1546.683, "fcr_bruto": 1.258, "fcr_neto": 1.371, "mort_pct": 0.039, "exceso_n": 0}, {"id": 6, "nombre": "Centro Puyuhuapi", "zona": "Aysén", "costo_kg_bruto": 1412.087, "costo_kg_neto": 1524.264, "fcr_bruto": 1.254, "fcr_neto": 1.354, "mort_pct": 0.039, "exceso_n": 0}, {"id": 4, "nombre": "Centro Melinka", "zona": "Aysén", "costo_kg_bruto": 1406.104, "costo_kg_neto": 1523.535, "fcr_bruto": 1.251, "fcr_neto": 1.355, "mort_pct": 0.039, "exceso_n": 16.405}, {"id": 3, "nombre": "Centro Quellón", "zona": "Los Lagos", "costo_kg_bruto": 1396.514, "costo_kg_neto": 1517.603, "fcr_bruto": 1.236, "fcr_neto": 1.344, "mort_pct": 0.04, "exceso_n": 0}, {"id": 5, "nombre": "Centro Cisnes", "zona": "Aysén", "costo_kg_bruto": 1383.048, "costo_kg_neto": 1502.554, "fcr_bruto": 1.225, "fcr_neto": 1.331, "mort_pct": 0.039, "exceso_n": 16.774}], "resto": {"costo_kg_bruto": 1410.707, "costo_kg_neto": 1529.974, "fcr_bruto": 1.252, "fcr_neto": 1.358, "mort_pct": 0.039}, "basales": [{"basal_id": "lote_sin_evento", "nombre": "Basal por lote sin evento", "A": 408228054.9218643, "B": 198915941.6897904, "traslape": 38298678.38798475, "union": 568845318.2236699, "obs": 45862.0, "esperado": 6740.4627103360535, "exceso_n": 39121.537289663946}, {"basal_id": "lote_previa_evento", "nombre": "Basal por lote previa al evento", "A": 408228054.9218643, "B": 198851666.28509015, "traslape": 38286302.99447953, "union": 568793418.212475, "obs": 45862.0, "esperado": 6753.953006514049, "exceso_n": 39108.04699348595}], "evento": {"id": "EV-8001", "tipo": "Caligus", "centro": "Centro Skyring"}};
 let DEF="bruto", CENTRO=DATA.critico.id, BASAL=0;
 const cl=new Intl.NumberFormat("es-CL");
 function mm(x){const s=(x/1e6).toLocaleString("es-CL",{minimumFractionDigits:1,maximumFractionDigits:1});return (x<0?"-$":"$")+s.replace("-","")+" MM";}
@@ -114,8 +118,12 @@ function pintar(){
   const centro=DATA.centros.find(x=>x.id===CENTRO);
   const ck=costoKg(centro), cr=costoKg(DATA.resto), difPct=100*(ck/cr-1);
   document.getElementById("kpi-costo").textContent=cl.format(Math.round(ck));
-  document.getElementById("kpi-comp").innerHTML=centro.nombre+" vs. resto de centros $"+cl.format(Math.round(cr))+
-    " &rarr; <span class='up'>+"+dec(difPct,1)+"%</span> ($"+cl.format(Math.round(ck-cr))+"/kg)";
+  const ckOtro=DEF==="bruto"?centro.costo_kg_neto:centro.costo_kg_bruto;
+  const otroTxt=DEF==="bruto"?"neto estimado":"bruto";
+  document.getElementById("kpi-comp").innerHTML=
+    "<span class='comp-big up'>+"+dec(difPct,1)+"% vs. resto</span> &middot; <b>+$"+cl.format(Math.round(ck-cr))+"/kg</b> "+
+    "(resto $"+cl.format(Math.round(cr))+"/kg)<br>"+
+    "<span class='otro'>Con FCR "+otroTxt+": $"+cl.format(Math.round(ckOtro))+"/kg</span>";
   const cob=DATA.meta.cobertura;
   document.getElementById("kpi-cob").innerHTML="Cobertura: 7/7 centros, "+DATA.meta.periodo.toLowerCase()+
     (cob?" &middot; precio válido en "+cob.validas+"/"+cob.total+" combinaciones tipo-mes ("+dec(cob.pct,1)+"%)":"");
@@ -128,6 +136,8 @@ function pintar(){
     "<div class='row'><span>B &middot; Alimento en peces muertos del evento "+DATA.evento.id+"</span><b>"+mm(b.B)+"</b></div>"+
     "<div class='row'><span>− Traslape (alimento contado en A y en B)</span><b>−"+mm(b.traslape)+"</b></div>"+
     "<div class='row tot'><span><b>= Unión A∪B &middot; total atribuido a "+DATA.critico.nombre+"</b></span><b>"+mm(b.union)+"</b></div>";
+  document.getElementById("imp-h2").textContent="Sobrecosto anual de "+DATA.critico.nombre+" · reparto por causa";
+  document.getElementById("imp-nota").innerHTML="El traslape es el alimento ya contado en A y en B; se resta para no sumarlo dos veces. Cifras en MM = millones de pesos. Ambas referencias basales dan casi el mismo resultado: el exceso es robusto a la basal.";
 
   dibujarChart(); dibujarTabla();
 
@@ -165,9 +175,11 @@ function dibujarChart(){
 function dibujarTabla(){
   const tb=document.querySelector("#tabla tbody");
   const cs=DATA.centros.slice().sort((a,b)=>costoKg(b)-costoKg(a));
+  const excBasal=DATA.basales[BASAL].exceso_n;
   tb.innerHTML=cs.map(c=>{const cls=c.id===DATA.critico.id?" class='top'":"";
+    const exc=c.id===DATA.critico.id?excBasal:c.exceso_n;
     return "<tr"+cls+"><td>"+c.nombre+"</td><td>"+c.zona+"</td><td>"+cl.format(Math.round(costoKg(c)))+
-      "</td><td>"+dec(fcr(c),3)+"</td><td>"+dec(c.mort_pct,3)+"%</td><td>"+cl.format(Math.round(c.exceso_n))+"</td></tr>";}).join("");
+      "</td><td>"+dec(fcr(c),3)+"</td><td>"+dec(c.mort_pct,3)+"%</td><td>"+cl.format(Math.round(exc))+"</td></tr>";}).join("");
 }
 
 document.querySelectorAll("#seg-def button").forEach(b=>b.addEventListener("click",()=>{

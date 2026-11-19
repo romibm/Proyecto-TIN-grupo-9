@@ -147,6 +147,9 @@ PLANTILLA = r"""<!DOCTYPE html>
   .cifra{font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1}
   .cifra small{font-size:17px;font-weight:700;color:var(--gris)}
   .comp{margin-top:8px;font-size:14px}
+  .comp-big{font-weight:800;font-size:16px}
+  .otro{color:var(--gris);font-size:12px}
+  .nota-rep{margin-top:10px;font-size:11px;color:var(--gris);border-top:1px dashed var(--linea);padding-top:8px}
   .up{color:var(--rojo);font-weight:700}
   .cobertura{margin-top:10px;font-size:12px;color:var(--gris);border-top:1px dashed var(--linea);padding-top:8px}
   .impacto .big{font-size:28px;font-weight:800;color:var(--rojo)}
@@ -196,9 +199,10 @@ PLANTILLA = r"""<!DOCTYPE html>
       <div class="cobertura" id="kpi-cob"></div>
     </section>
     <section class="card impacto">
-      <h2>Sobrecosto anual del centro crítico - reparto por causa</h2>
+      <h2 id="imp-h2">Sobrecosto anual · reparto por causa</h2>
       <div class="big" id="imp-total"></div>
       <div class="reparto" id="imp-reparto"></div>
+      <div class="nota-rep" id="imp-nota"></div>
     </section>
     <section class="card full">
       <h2>Costo de alimento por kg y centro (<span id="def-txt2">bruto</span>)</h2>
@@ -236,8 +240,12 @@ function pintar(){
   const centro=DATA.centros.find(x=>x.id===CENTRO);
   const ck=costoKg(centro), cr=costoKg(DATA.resto), difPct=100*(ck/cr-1);
   document.getElementById("kpi-costo").textContent=cl.format(Math.round(ck));
-  document.getElementById("kpi-comp").innerHTML=centro.nombre+" vs. resto de centros $"+cl.format(Math.round(cr))+
-    " &rarr; <span class='up'>+"+dec(difPct,1)+"%</span> ($"+cl.format(Math.round(ck-cr))+"/kg)";
+  const ckOtro=DEF==="bruto"?centro.costo_kg_neto:centro.costo_kg_bruto;
+  const otroTxt=DEF==="bruto"?"neto estimado":"bruto";
+  document.getElementById("kpi-comp").innerHTML=
+    "<span class='comp-big up'>+"+dec(difPct,1)+"% vs. resto</span> &middot; <b>+$"+cl.format(Math.round(ck-cr))+"/kg</b> "+
+    "(resto $"+cl.format(Math.round(cr))+"/kg)<br>"+
+    "<span class='otro'>Con FCR "+otroTxt+": $"+cl.format(Math.round(ckOtro))+"/kg</span>";
   const cob=DATA.meta.cobertura;
   document.getElementById("kpi-cob").innerHTML="Cobertura: 7/7 centros, "+DATA.meta.periodo.toLowerCase()+
     (cob?" &middot; precio válido en "+cob.validas+"/"+cob.total+" combinaciones tipo-mes ("+dec(cob.pct,1)+"%)":"");
@@ -250,6 +258,8 @@ function pintar(){
     "<div class='row'><span>B &middot; Alimento en peces muertos del evento "+DATA.evento.id+"</span><b>"+mm(b.B)+"</b></div>"+
     "<div class='row'><span>− Traslape (alimento contado en A y en B)</span><b>−"+mm(b.traslape)+"</b></div>"+
     "<div class='row tot'><span><b>= Unión A∪B &middot; total atribuido a "+DATA.critico.nombre+"</b></span><b>"+mm(b.union)+"</b></div>";
+  document.getElementById("imp-h2").textContent="Sobrecosto anual de "+DATA.critico.nombre+" · reparto por causa";
+  document.getElementById("imp-nota").innerHTML="El traslape es el alimento ya contado en A y en B; se resta para no sumarlo dos veces. Cifras en MM = millones de pesos. Ambas referencias basales dan casi el mismo resultado: el exceso es robusto a la basal.";
 
   dibujarChart(); dibujarTabla();
 
@@ -287,9 +297,11 @@ function dibujarChart(){
 function dibujarTabla(){
   const tb=document.querySelector("#tabla tbody");
   const cs=DATA.centros.slice().sort((a,b)=>costoKg(b)-costoKg(a));
+  const excBasal=DATA.basales[BASAL].exceso_n;
   tb.innerHTML=cs.map(c=>{const cls=c.id===DATA.critico.id?" class='top'":"";
+    const exc=c.id===DATA.critico.id?excBasal:c.exceso_n;
     return "<tr"+cls+"><td>"+c.nombre+"</td><td>"+c.zona+"</td><td>"+cl.format(Math.round(costoKg(c)))+
-      "</td><td>"+dec(fcr(c),3)+"</td><td>"+dec(c.mort_pct,3)+"%</td><td>"+cl.format(Math.round(c.exceso_n))+"</td></tr>";}).join("");
+      "</td><td>"+dec(fcr(c),3)+"</td><td>"+dec(c.mort_pct,3)+"%</td><td>"+cl.format(Math.round(exc))+"</td></tr>";}).join("");
 }
 
 document.querySelectorAll("#seg-def button").forEach(b=>b.addEventListener("click",()=>{

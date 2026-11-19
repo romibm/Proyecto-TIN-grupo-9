@@ -1,5 +1,5 @@
 {
-  "fecha": "2026-11-18T23:32:38.515481+00:00",
+  "fecha": "2026-11-19T02:12:09.766568+00:00",
   "estado": "ok_con_advertencias",
   "fuentes": {
     "sqlite": {
@@ -475,6 +475,6 @@
     "graficos_basal.py",
     "tablero/generar_tablero.py"
   ],
-  "duracion_segundos": 28.937,
-  "fin": "2026-11-18T23:33:07.454937+00:00"
+  "duracion_segundos": 21.0,
+  "fin": "2026-11-19T02:12:30.774327+00:00"
 }
